@@ -19,7 +19,7 @@ Navigate to the project root...
 If you use anaconda, you should install dependencies to a conda environment like so:
 `conda env create -f environment.yml`
 
-To activate the environment 
+To activate the environment:
 `conda activate hotel_env`
 
 If not, install dependencies like so:  
