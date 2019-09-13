@@ -2,6 +2,12 @@
 
 Class project for UCF's Processes for Object Oriented Software Development
 
+## Teammates
+- [Henrique Cury](https://github.com/HCury)
+- [Rodrigo Lopez](https://github.com/RodiLop)
+- [Brian Pelo](https://github.com/Brianpelo)
+- [Nicolas Soto](https://github.com/nsoto0216)
+
 ## Running the website locally
 This system runs on Python 3.7
 
