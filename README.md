@@ -1,6 +1,6 @@
 # HotelReservationSystem
 
-Hotel Reservation System class project for UCF's Processes for Object Oriented Software Development
+Class project for UCF's Processes for Object Oriented Software Development
 
 ## Running the website locally
 This system runs on Python 3.7
