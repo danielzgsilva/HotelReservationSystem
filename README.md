@@ -14,7 +14,7 @@ This system runs on Python 3.7
 Start off by cloning the repo:  
 `git clone https://github.com/danielzgsilva/HotelReservationSystem`
 
-Navigate to the project root...
+Navigate to the project root
 
 If you use anaconda, you should install dependencies to a conda environment like so:
 `conda env create -f environment.yml`
