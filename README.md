@@ -28,10 +28,10 @@ If you have trouble creating the env with the yml, you can do so manually like t
 `conda install flask`  
 `conda install sqlite`  
 
-To list all packages in the environment
+To list all packages in the environment  
 `conda list`
 
-Deactivate the environment
+Deactivate the environment  
 `conda deactivate`
 
 Run the app with:  
