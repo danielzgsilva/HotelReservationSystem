@@ -23,10 +23,10 @@ To activate the environment:
 `conda activate hotel_env`
 
 If you have trouble creating the env with the yml, you can do so manually like this:  
-`conda create --name <env_name>`
-`conda activate <env_name>`
-`conda install flask`
-`conda install sqlite`
+`conda create --name <env_name>`  
+`conda activate <env_name>`  
+`conda install flask`  
+`conda install sqlite`  
 
 To list all packages in the environment
 `conda list`
