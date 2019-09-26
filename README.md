@@ -22,8 +22,17 @@ If you use anaconda, you should install dependencies to a conda environment like
 To activate the environment:  
 `conda activate hotel_env`
 
-If not, install dependencies like so:  
-`pip install -r requirements.txt`
+If you have trouble creating the env with the yml, you can do so manually like this:  
+`conda create --name <env_name>`  
+`conda activate <env_name>`  
+`conda install flask`  
+`conda install sqlite`  
+
+To list all packages in the environment  
+`conda list`
+
+Deactivate the environment  
+`conda deactivate`
 
 Run the app with:  
 `python app.py`
