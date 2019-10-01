@@ -1,13 +1,86 @@
 <!DOCTYPE html>
-
-<html>
-
+<html lang="en">
 <head>
-	<meta charset="utf-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <style>
+        #get_started {
+            padding-left: 10px;
+            padding-right: 10px;
+            padding-bottom: 10px;
+            padding-top: 10px;
+        }
+
+        #find_rooms_button {
+            height: 50px;
+            width: 240px;
+        }
+    </style>
 </head>
-
 <body>
-	
-</body>
+    <header>
+		<nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
+			<div class="container">
+				<a class="navbar-brand" href="#">Hotel Reservation System</a>
+				<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+			<div class="collapse navbar-collapse" id="navbarResponsive">
+				<ul class="navbar-nav ml-auto">
+				<li class="nav-item active">
+					<a class="nav-link" href="#">Home
+						<span class="sr-only">(current)</span>
+					</a>
+				</li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">About</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">Employee Portal</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">Contact</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </header>
 
+    <main role="main">
+						<form>
+  First name:<br>
+  <input type="text" name="firstname"><br>
+  Last name:<br>
+  <input type="text" name="lastname"><br>
+	Phone Number:<br>
+	<input type="number" name="phonenumber"><br>
+	Email:<br>
+	<input type="email" name="email"><br>
+	Check-in date:<br>
+	<input type="date" name="checin"><br>
+	Check-out date:<br>
+	<input type="date" name="checkout"><br>
+</form>
+
+<form action="#">
+	<button type="submit" class="btn btn-primary">Finish Reservation
+	</button>
+</form>
+    </main>
+
+    <footer class="py-5 bg-dark" id="footer">
+        <div class="container">
+          <p class="float-right text-white">
+            <a href="#">Back to top</a>
+          </p>
+          <p class="float-left text-white">Hotel Reservation System</p>
+        </div>
+    </footer>
+</body>
 </html>
+<script>
+
+</script>
