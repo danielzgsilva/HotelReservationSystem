@@ -1,54 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>{{ title }}</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <style>
-        #get_started {
+{% extends "layout.html" %}
+
+{% block content %}
+<style>
+ #get_started {
             padding-left: 10px;
             padding-right: 10px;
             padding-bottom: 10px;
             padding-top: 10px;
         }
 
-        #find_rooms_button {
-            height: 50px;
-            width: 240px;
-        }
-    </style>
-</head>
+#find_rooms_button {
+    height: 50px;
+    width: 240px;
+}
+</style>
 <body>
-    <header>
-      <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
-        <div class="container">
-          <a class="navbar-brand" href="#">Hotel Reservation System</a>
-          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarResponsive">
-            <ul class="navbar-nav ml-auto">
-              <li class="nav-item active">
-                <a class="nav-link" href="#">Home
-                  <span class="sr-only">(current)</span>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">About</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">Employee Portal</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">Contact</a>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </nav>
-    </header>
-
     <main role="main">
         <div class="container">
             <div class="row align-items-center my-5">
@@ -68,7 +34,7 @@
                 <form class="form-inline" id="inquiry_form" action="{{ url_for('check_availability') }}" method="post">
                      <div class="form-group col-xs-3 col-md-3">
                         <label for="guest_num_input" class="control-label">Number of Guests</label>
-                          <select class="form-control" style="width: 200px" name="guest_num_input">
+                          <select class="form-control" style="width: 200px" name="guest_num_input" value="{{ num_guests }}">
                             <option>1</option>
                             <option>2</option>
                             <option>3</option>
@@ -79,11 +45,19 @@
                     </div>
                     <div class="form-group col-xs-3 col-md-3">
                         <label for="check_in" class="control-label">Check In Date</label>
-                        <input class="form-control" style="width: 200px" type="date" value="" name="check_in" placeholder="9-13-2019">
+                        {% if check_in %}
+                            <input class="form-control" style="width: 200px" type="date" value="{{ check_in }}" name="check_in">
+                        {% else %}
+                            <input class="form-control" style="width: 200px" type="date" value="" name="check_in" placeholder="9-13-2019">
+                        {% endif %}
                     </div>
                     <div class="form-group col-xs-3 col-md-3 ">
                         <label for="check_out" class="control-label">Check Out Date</label>
-                        <input class="form-control" type="date" style="width: 200px" value="" name="check_out" placeholder="9-14-2019">
+                        {% if check_out %}
+                            <input class="form-control" style="width: 200px" type="date" value="{{ check_out }}" name="check_out">
+                        {% else %}
+                            <input class="form-control" type="date" style="width: 200px" value="" name="check_out" placeholder="9-14-2019">
+                        {% endif %}
                     </div>
                     <div class="form-group col-xs-3 col-md-3">
                         <button  type="submit" class="btn btn-primary" id="find_rooms_button" >Find Available Rooms!</button>
@@ -105,8 +79,8 @@
                   </div>
                     <div class="card-footer">
                     {% if single_count > 0 %}
-                        <strong>{{ single_count }} available</strong>
-                        <a href="#" class="btn btn-primary">Book Now</a>
+                        <strong>{{ single_count }} available</strong><br>
+                        <a href="{{ url_for('make_reservation', num_guests=num_guests, check_in=check_in, check_out=check_out, room='single') }}" class="btn btn-primary">Book Now</a>
                     {% endif %}
                     </div>
                 </div>
@@ -124,8 +98,8 @@
                   </div>
                     <div class="card-footer">
                     {% if double_count > 0 %}
-                        <strong>{{ double_count }} available</strong>
-                        <a href="#" class="btn btn-primary">Book Now</a>
+                        <strong>{{ double_count }} available</strong><br>
+                        <a href="{{ url_for('make_reservation', num_guests=num_guests, check_in=check_in, check_out=check_out, room='double') }}" class="btn btn-primary">Book Now</a>
                     {% endif %}
                     </div>
                 </div>
@@ -142,29 +116,21 @@
                       </ul>
                   </div>
                     <div class="card-footer">
-                        <div id="availability"></div>
-                        <a href="#" class="btn btn-primary">Book Now</a>
+                    {% if deluxe_count > 0 %}
+                        <strong>{{ deluxe_count }} available</strong><br>
+                        <a href="{{ url_for('make_reservation', num_guests=num_guests, check_in=check_in, check_out=check_out, room='deluxe') }}" class="btn btn-primary">Book Now</a>
+                    {% endif %}
                     </div>
                 </div>
               </div>
             </div>
         </div>
-        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <div id="bottom"></div>
+        {% if scroll %}
+        <script>
+            document.getElementById('{{ scroll }}').scrollIntoView();
+        </script>
+        {% endif %}
     </main>
-
-    <footer class="py-5 bg-dark" id="footer">
-        <div class="container">
-          <p class="float-right text-white">
-            <a href="#">Back to top</a>
-          </p>
-          <p class="float-left text-white">Hotel Reservation System</p>
-        </div>
-    </footer>
 </body>
-</html>
-<script>
-
-</script>
+{% endblock %}

@@ -1,31 +1,70 @@
 import os
-from flask import Flask, render_template, send_from_directory, request
+from flask import Flask, render_template, send_from_directory, request, session
 
-import QueryDB
+from reservation import Reservation
+from utils import *
 
 app = Flask(__name__)
+app.secret_key = 'hotel_reservation'
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 
 @app.route("/")
-@app.route("/home")
 def index():
     return render_template('index.html', title='Home', single_count = -1, double_count = -1, deluxe_count = -1)
 
-@app.route('/check_availability', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
 def check_availability():
-    # Get user Input
+    # Get user input
     num_guests = int(request.form.get('guest_num_input'))
     check_in = str(request.form.get('check_in'))
     check_out = str(request.form.get('check_out'))
 
-    date_in = QueryDB.get_int_date(check_in)
-    date_out = QueryDB.get_int_date(check_out)
+    date_in = get_int_date(check_in)
+    date_out = get_int_date(check_out)
 
     # Querying hotel database
-    single_count, double_count, deluxe_count = QueryDB.get_availability(num_guests, date_in, date_out)
+    single_count, double_count, deluxe_count = Reservation.get_availability(num_guests, date_in, date_out)
 
-    return render_template('available_rooms.html', single_count = single_count, double_count = double_count, deluxe_count = deluxe_count)
+    return render_template('index.html', title='Home', num_guests = num_guests, check_in = check_in, check_out = check_out,
+                           single_count = single_count, double_count = double_count, deluxe_count = deluxe_count, scroll = 'bottom')
+
+@app.route('/booking', methods=['GET'])
+def make_reservation():
+    # Get user input
+    check_in = request.args.get('check_in')
+    check_out = request.args.get('check_out')
+    room_type = request.args.get('room')
+
+    # Instantiate reservation class
+    new_reservation = Reservation(check_in, check_out, room_type)
+
+    # Store reservation in flask session in order for other routes to access it's variables
+    session['new_reservation'] = new_reservation.__dict__
+
+    return render_template('make_reservation.html', title='Booking', reservation=new_reservation)
+
+@app.route('/booking', methods=['GET', 'POST'])
+def store_reservation():
+    # Rebuild reservation class from session variables
+    reservation_vars = session['new_reservation']
+    reservation = Reservation(reservation_vars['check_in'], reservation_vars['check_out'], reservation_vars['room_type'])
+
+    # Get user input
+    first_name = request.form.get('first_name')
+    last_name = request.form.get('last_name')
+    email = request.form.get('email')
+    phone = request.form.get('phone')
+    wifi = request.form.get('wifi')
+    tv = request.form.get('tv')
+    parking = request.form.get('parking')
+    pool = request.form.get('pool')
+
+    # Store reservation data in hotel database
+    reservation.store_reservation(first_name, last_name, email, phone, wifi, tv, parking, pool)
+
+    message = "We've booked your stay for {} nights! We look forward towards seeing you!".format(reservation.length)
+    return render_template('success.html', title='Success', message = message)
 
 @app.route('/<filename>')
 def load_image(filename):
