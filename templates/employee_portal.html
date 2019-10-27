@@ -1,0 +1,121 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<style>
+
+</style>
+<body>
+    <main role="main">
+        <div class="container">
+
+        <header class="jumbotron my-4">
+          <h1 class="display-3">Welcome to the Employee Portal!</h1>
+          <p class="lead">This portal enables you to assign rooms to guests, create and edit work orders, print lodging receipts and query guest data from the database. Your access here is dependent on your account level.</p>
+          <a href="#" class="btn btn-primary btn-lg">Logout</a>
+        </header>
+
+        <div class="row text-center">
+          <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card h-100">
+              <div class="card-body">
+                <h4 class="card-title">View Work Orders</h4>
+                <p class="card-text">View all currently open work orders. Use this to also comment on or close a work order.</p>
+              </div>
+              <div class="card-footer">
+                <a href="#" class="btn btn-primary">Go!</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card h-100">
+              <div class="card-body">
+                <h4 class="card-title">Create Room Cleaning Order</h4>
+                <p class="card-text">Create a room cleaning request for a given room number. These are also created automatically after vacating a room.</p>
+              </div>
+              <div class="card-footer">
+                <a href="#" class="btn btn-primary">Go!</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card h-100">
+              <div class="card-body">
+                <h4 class="card-title">Create Room Service Order</h4>
+                <p class="card-text">Use this action to create a room service order when requested by a guest.</p>
+              </div>
+              <div class="card-footer">
+                <a href="#" class="btn btn-primary">Go!</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card h-100">
+              <div class="card-body">
+                <h4 class="card-title">Print Receipt</h4>
+                <p class="card-text">Print a receipt for a specified guest. This should include all additional reservation items as well as room service requests.</p>
+              </div>
+              <div class="card-footer">
+                <a href="#" class="btn btn-primary">Go!</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row text-center">
+          <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card h-100">
+              <div class="card-body">
+                <h4 class="card-title">Assign Rooms</h4>
+                <p class="card-text">Assign rooms to guests who have checked into their reservation.</p>
+              </div>
+              <div class="card-footer">
+                <a href="#" class="btn btn-primary">Go!</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card h-100">
+              <div class="card-body">
+                <h4 class="card-title">Vacate Room</h4>
+                <p class="card-text">Vacate a room in the system after a guest checks out. This will auto-generate a room cleaning order.</p>
+              </div>
+              <div class="card-footer">
+                <a href="#" class="btn btn-primary">Go!</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card h-100">
+              <div class="card-body">
+                <h4 class="card-title">View Reservations</h4>
+                <p class="card-text">Query data for all reservations in a specific data range.</p>
+              </div>
+              <div class="card-footer">
+                <a href="#" class="btn btn-primary">Go!</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card h-100">
+              <div class="card-body">
+                <h4 class="card-title">View Guest Data</h4>
+                <p class="card-text">Query a guest's data. Based on reservation number or specified guest fields.</p>
+              </div>
+              <div class="card-footer">
+                <a href="#" class="btn btn-primary">Go!</a>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+    <script>
+
+    </script>
+    </main>
+</body>
+{% endblock %}

@@ -66,6 +66,10 @@ def store_reservation():
     message = "We've booked your stay for {} nights! We look forward towards seeing you!".format(reservation.length)
     return render_template('success.html', title='Success', message = message)
 
+@app.route('/employee_portal', methods=['GET'])
+def employee_portal():
+    return render_template('employee_portal.html', title='Employee Portal')
+
 @app.route('/<filename>')
 def load_image(filename):
     return send_from_directory('static/', filename)
