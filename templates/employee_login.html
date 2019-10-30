@@ -1,11 +1,12 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<div class="content-section col-md-7">
+ <div class="container"><br>
+<div class="jumbotron center">
 		<form action="" method="POST">
 			{{ form.hidden_tag() }}
 			<fieldset class="form-group">
-				<legend class ="border-bottom mb-4">Log In</legend>
+                <legend class ="border-bottom mb-4"><h1>Log In</h1></legend>
 				<div class = "form-group">
 					{{ form.email.label(class="form-control-label") }}
 
@@ -40,4 +41,10 @@
 			</div>
 		</form>
 	</div>
+     <div class="border-top pt-3">
+            <h4 class="text-muted">
+                Don't have an account? <a class = "ml-2" href="{{ url_for('employee_registration') }}">Register here</a>
+            </h4><br>
+        </div>
+ </div>
 {% endblock %}

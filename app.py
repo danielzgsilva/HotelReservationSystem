@@ -1,9 +1,9 @@
 import os
 from forms import RegistrationForm, LoginForm
-from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, render_template, send_from_directory, request, session, flash, url_for, redirect
-from flask_bcrypt import Bcrypt
+#from flask_bcrypt import Bcrypt
 
+from employee import Employee
 from reservation import Reservation
 from utils import *
 
@@ -99,17 +99,25 @@ def employee_registration():
     # redirects user if they're already logged in
     #if current_user.is_authenticated:
         #return redirect(url_for('home'))
+
     form = RegistrationForm()
     if form.validate_on_submit():
-        # adding user to database!!
-        #hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-        #user = User(username=form.username.data, email=form.email.data, password=hashed_password)
-        #db.session.add(user)
-        #db.session.commit()
-        flash(f'Your account has been created! You are now able to log in', 'success')
-        return redirect(url_for('employee_login'))
-    return render_template('employee_registration.html', title='Register', form = form)
+        # hashing password
+        #hashed_password = Bcrypt.generate_password_hash(form.password.data).decode('utf-8')
 
+        # Instantiate employee object
+        employee = Employee(form.first_name.data, form.last_name.data, form.email.data, form.password.data, form.admin_flag.data)
+
+        # Add employee to database
+        if employee.store():
+            flash(f'Your account has been created! You are now able to log in', 'success')
+        else:
+            flash(f'Oops it didnt work', 'failure')
+            return redirect(url_for('employee_registration'))
+
+        return redirect(url_for('employee_login'))
+
+    return render_template('employee_registration.html', title='Register', form = form)
 
 @app.route('/<filename>')
 def load_image(filename):

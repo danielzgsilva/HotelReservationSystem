@@ -78,6 +78,6 @@ class Reservation:
                 double_count += 1
             elif row[1] == 'Deluxe':
                 deluxe_count += 1
-
+        conn.close()
         # Return availability
         return single_count, double_count, deluxe_count
