@@ -1,5 +1,8 @@
 import os
-from flask import Flask, render_template, send_from_directory, request, session
+from forms import RegistrationForm, LoginForm
+from flask_sqlalchemy import SQLAlchemy
+from flask import Flask, render_template, send_from_directory, request, session, flash, url_for, redirect
+from flask_bcrypt import Bcrypt
 
 from reservation import Reservation
 from utils import *
@@ -70,6 +73,44 @@ def store_reservation():
 def employee_portal():
     return render_template('employee_portal.html', title='Employee Portal')
 
+# employee login route
+@app.route('/employee_login', methods=['GET','POST'])
+def employee_login():
+    #if current_user.is_authenticated:
+        #return redirect(url_for('home'))
+    form = LoginForm()
+    if form.validate_on_submit():
+        # checking user is in database
+        #user = User.query.filter_by(email=form.email.data).first()
+        #if user and bcrypt.check_password_hash(user.password, form.password.data):
+            #login_user(user, remember=form.remember.data)
+            # get's the page that user tried to enter that
+            # redirected then to log in
+            #next_page = request.args.get('next')
+            #return redirect(next_page) if next_page else redirect(url_for('home'))
+        #else:
+            #flash('Login Unsuccessful. Please check email and password', 'danger')
+        flash('You have been logged in!')
+        return redirect(url_for('employee_portal'))
+    return render_template('employee_login.html', title = "Login", form = form)
+
+@app.route('/employee_registration', methods=['GET','POST'])
+def employee_registration():
+    # redirects user if they're already logged in
+    #if current_user.is_authenticated:
+        #return redirect(url_for('home'))
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        # adding user to database!!
+        #hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+        #user = User(username=form.username.data, email=form.email.data, password=hashed_password)
+        #db.session.add(user)
+        #db.session.commit()
+        flash(f'Your account has been created! You are now able to log in', 'success')
+        return redirect(url_for('employee_login'))
+    return render_template('employee_registration.html', title='Register', form = form)
+
+
 @app.route('/<filename>')
 def load_image(filename):
     return send_from_directory('static/', filename)
@@ -83,4 +124,4 @@ def internal_server_error(e):
     return render_template('index.html'), 500
 
 if __name__ == "__main__":
-    app.run('localhost', port=5555)
+    app.run('localhost', port=5555, debug=True)
