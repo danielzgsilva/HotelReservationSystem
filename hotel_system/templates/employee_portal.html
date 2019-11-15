@@ -7,7 +7,19 @@
 <body>
     <main role="main">
         <div class="container">
-
+            {% with messages = get_flashed_messages(with_categories=true) %}
+               {% if messages %}
+                 <ul class="flashes">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">{{ message }}
+                            <button type="button" class="close" data-dismiss={{ category }} aria-label="Close">
+                                <span aria-hidden="true">x</span>
+                            </button>
+                        </div>
+                    {% endfor %}
+                </ul>
+              {% endif %}
+             {% endwith %}
         <header class="jumbotron my-4">
           <h1 class="display-3">Welcome to the Employee Portal!</h1>
           <p class="lead">This portal enables you to assign rooms to guests, create and edit work orders, print lodging receipts and query guest data from the database. Your access here is dependent on your account level.</p>

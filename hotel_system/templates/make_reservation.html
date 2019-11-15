@@ -13,7 +13,20 @@
 </style>
 <body>
     <main role="main">
-        <div class="container"><br>
+        <div class="container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+               {% if messages %}
+                 <ul class="flashes">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">{{ message }}
+                            <button type="button" class="close" data-dismiss={{ category }} aria-label="Close">
+                                <span aria-hidden="true">x</span>
+                            </button>
+                        </div>
+                    {% endfor %}
+                </ul>
+              {% endif %}
+             {% endwith %}
             <div class="jumbotron center">
                 <form action="{{ url_for('store_reservation', reservation=reservation.length) }}" method="post" class="reservation-form">
                   {{ form.hidden_tag() }}
@@ -96,10 +109,10 @@
                           </tbody>
                         </table>
                         <fieldset class="form-group">
-                                  <legend class ="border-bottom mb-4"><h4>Personal Information</h4></legend>
-                           <div class = "form-group">
-                  					{{ form.first_name.label(class="form-control-label") }}
-
+                          <h4 class="font-weight-light">Personal Information</h4>
+                           <div class="row">
+                              <div class="col-md-6 col-sm-6 col-xs-6">
+                                  {{ form.first_name.label(class="form-control-label") }}
                   					{% if form.first_name.errors %}
                   						{{ form.first_name(class="form-control form-control-lg is-invalid") }}
                   						<div class="invalid-feedback">
@@ -110,8 +123,9 @@
                   					{% else %}
                   						{{ form.first_name(class="form-control form-control-lg") }}
                   					{% endif %}
-                  				</div>
-                               <div class = "form-group">
+                              </div>
+                                 <div class="col-md-6 col-sm-6 col-xs-6">
+                                  <div class = "form-group">
                   					{{ form.last_name.label(class="form-control-label") }}
 
                   					{% if form.last_name.errors %}
@@ -125,7 +139,11 @@
                   						{{ form.last_name(class="form-control form-control-lg") }}
                   					{% endif %}
                   				</div>
-                  				<div class = "form-group">
+                              </div>
+                            </div>
+                            <div class="row">
+                              <div class="col-md-6 col-sm-6 col-xs-6">
+                                  <div class = "form-group">
                   					{{ form.email.label(class="form-control-label") }}
 
                   					{% if form.email.errors %}
@@ -139,66 +157,122 @@
                   						{{ form.email(class="form-control form-control-lg") }}
                   					{% endif %}
                   				</div>
-                  				<div class = "form-group">
-                  					{{ form.phone.label(class="form-control-label") }}
-
-                  					{% if form.phone.errors %}
-                  						{{ form.phone(class="form-control form-control-lg is-invalid") }}
-                  						<div class="invalid-feedback">
-                  							{% for error in form.phone.errors %}
-                  								<span>{{ error }}</span>
-                  							{% endfor %}
-                  						</div>
-                  					{% else %}
-                  						{{ form.phone(class="form-control form-control-lg") }}
-                  					{% endif %}
-                  				</div>
-                  				<div class = "form-group">
-                  					{{ form.credit_card.label(class="form-control-label") }}
-
-                  					{% if form.credit_card.errors %}
-                  						{{ form.credit_card(class="form-control form-control-lg is-invalid") }}
-                  						<div class="invalid-feedback">
-                  							{% for error in form.credit_card.errors %}
-                  								<span>{{ error }}</span>
-                  							{% endfor %}
-                  						</div>
-                  					{% else %}
-                  						{{ form.credit_card(class="form-control form-control-lg") }}
-                  					{% endif %}
-                  				</div>
-                  			</fieldset>
-                        <div class="form-group">
-                  				{{ form.submit(class="btn btn-outline-info") }}
-                  			</div>
-                        <!--
-                            <div class="row">
-                              <div class="col-md-6 col-sm-6 col-xs-6">
-                                  <span class="help-block text-muted" > First Name</span>
-                                  <input type="text" class="form-control" name='first_name' placeholder="John" />
                               </div>
                                  <div class="col-md-6 col-sm-6 col-xs-6">
-                                  <span class="help-block text-muted" >  Last Name</span>
-                                  <input type="text" class="form-control" name='last_name' placeholder="Doe" />
-                              </div>
-                            </div>
-                            <div class="row">
-                              <div class="col-md-6 col-sm-6 col-xs-6">
-                                  <span class="help-block text-muted" > Email</span>
-                                  <input type="text" class="form-control" name='email' placeholder="john.doe@email.com" />
-                              </div>
-                                 <div class="col-md-6 col-sm-6 col-xs-6">
-                                  <span class="help-block text-muted" >  Phone Number</span>
-                                  <input type="text" class="form-control" name='phone' placeholder="012-345-6789" />
+                                     <div class = "form-group">
+                                        {{ form.phone.label(class="form-control-label") }}
+
+                                        {% if form.phone.errors %}
+                                            {{ form.phone(class="form-control form-control-lg is-invalid") }}
+                                            <div class="invalid-feedback">
+                                                {% for error in form.phone.errors %}
+                                                    <span>{{ error }}</span>
+                                                {% endfor %}
+                                            </div>
+                                        {% else %}
+                                            {{ form.phone(class="form-control form-control-lg") }}
+                                        {% endif %}
+                                    </div>
                               </div>
                             </div><br>
-                        <h4 class="font-weight-light">Payment Information</h4>
-                        <div class="row ">
-                          <div class="col-md-12">
-                              <span class="help-block text-muted" >  Card Number</span>
-                              <input type="text" class="form-control" placeholder="Enter Card Number" />
-                          </div>
-                        </div>
+                            <h4 class="font-weight-light">Payment Information</h4>
+                            <div class="row ">
+                                <div class="col-md-12 col-sm-12 col-xs-12">
+                                    <div class = "form-group">
+                                        {{ form.credit_card.label(class="form-control-label") }}
+
+                                        {% if form.credit_card.errors %}
+                                            {{ form.credit_card(class="form-control form-control-lg is-invalid") }}
+                                            <div class="invalid-feedback">
+                                                {% for error in form.credit_card.errors %}
+                                                    <span>{{ error }}</span>
+                                                {% endfor %}
+                                            </div>
+                                        {% else %}
+                                            {{ form.credit_card(class="form-control form-control-lg") }}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row ">
+                                <div class="col-md-4 col-sm-4 col-xs-4">
+                                    <div class = "form-group">
+                                        {{ form.expiry_month.label(class="form-control-label") }}
+
+                                        {% if form.expiry_month.errors %}
+                                            {{ form.expiry_month(class="form-control form-control-lg is-invalid") }}
+                                            <div class="invalid-feedback">
+                                                {% for error in form.expiry_month.errors %}
+                                                    <span>{{ error }}</span>
+                                                {% endfor %}
+                                            </div>
+                                        {% else %}
+                                            {{ form.expiry_month(class="form-control form-control-lg") }}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4 col-xs-4">
+                                    <div class = "form-group">
+                                      {{ form.expiry_year.label(class="form-control-label") }}
+
+                                        {% if form.expiry_year.errors %}
+                                            {{ form.expiry_year(class="form-control form-control-lg is-invalid") }}
+                                            <div class="invalid-feedback">
+                                                {% for error in form.expiry_year.errors %}
+                                                    <span>{{ error }}</span>
+                                                {% endfor %}
+                                            </div>
+                                        {% else %}
+                                            {{ form.expiry_year(class="form-control form-control-lg") }}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4 col-xs-4">
+                                    <div class = "form-group">
+                                        {{ form.card_ccv.label(class="form-control-label") }}
+
+                                        {% if form.card_ccv.errors %}
+                                            {{ form.card_ccv(class="form-control form-control-lg is-invalid") }}
+                                            <div class="invalid-feedback">
+                                                {% for error in form.card_ccv.errors %}
+                                                    <span>{{ error }}</span>
+                                                {% endfor %}
+                                            </div>
+                                        {% else %}
+                                            {{ form.card_ccv(class="form-control form-control-lg") }}
+                                        {% endif %}
+                                  </div>
+                                </div>
+                            </div>
+                            <div class="row ">
+                                <div class="col-md-12 pad-adjust">
+                                    <div class = "form-group">
+                                        {{ form.card_name.label(class="form-control-label") }}
+
+                                        {% if form.card_name.errors %}
+                                            {{ form.card_name(class="form-control form-control-lg is-invalid") }}
+                                            <div class="invalid-feedback">
+                                                {% for error in form.card_name.errors %}
+                                                    <span>{{ error }}</span>
+                                                {% endfor %}
+                                            </div>
+                                        {% else %}
+                                            {{ form.card_name(class="form-control form-control-lg") }}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div><br>
+                  			</fieldset>
+                            <div class="row " id="payment_buttons">
+                                <div class="col-md-6 col-sm-6 col-xs-6 pad-adjust">
+                                 <input type="submit"  class="btn btn-danger" value="CANCEL" />
+                                </div>
+                                <div class="col-md-6 col-sm-6 col-xs-6 pad-adjust" id="payment_buttons">
+                                  {{ form.submit(class="btn btn-warning btn-block") }}
+                                </div>
+                            </div>
+                        <!--
+
                         <div class="row ">
                           <div class="col-md-4 col-sm-4 col-xs-4">
                               <span class="help-block text-muted" > Expiry Month</span>
@@ -219,14 +293,6 @@
                                 <input type="text" class="form-control" placeholder="John Doe" />
                             </div>
                         </div><br>
-                        <div class="row " id="payment_buttons">
-                            <div class="col-md-6 col-sm-6 col-xs-6 pad-adjust">
-                                 <input type="submit"  class="btn btn-danger" value="CANCEL" />
-                              </div>
-                              <div class="col-md-6 col-sm-6 col-xs-6 pad-adjust" id="payment_buttons">
-                                  <input type="submit"  class="btn btn-warning btn-block" value="PAY NOW" />
-                              </div>
-                        </div>
                         -->
                 </form>
             </div>

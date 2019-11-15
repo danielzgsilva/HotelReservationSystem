@@ -46,7 +46,9 @@ def make_reservation():
     check_out = request.args.get('check_out')
     room_type = request.args.get('room')
 
+    # Filter available rooms based on guest selection
     session['available'] = [i for i in session['available'] if i[1] == room_type]
+
     # Instantiate reservation class
     new_reservation = temp_reservation(check_in, check_out, room_type)
 
@@ -62,19 +64,15 @@ def store_reservation():
     reservation = temp_reservation(temp['check_in'], temp['check_out'], temp['room_type'])
 
     form = ReservationForm()
-    #wifi = False if request.form.get('wifi') is None else True
 
     if form.validate_on_submit():
         # Get user input
-        '''first_name = request.form.get('first_name')
-        last_name = request.form.get('last_name')
-        email = request.form.get('email')
-        phone = request.form.get('phone')'''
         wifi = False if request.form.get('wifi') is None else True
         tv = False if request.form.get('tv') is None else True
         parking = False if request.form.get('parking') is None else True
         pool = False if request.form.get('pool') is None else True
 
+        # Assign the reservation a room number
         room_nums = [int(i[0]) for i in session['available']]
         room_num = min(room_nums)
 
@@ -83,13 +81,13 @@ def store_reservation():
          credit_card=form.credit_card.data, check_in=get_int_date(temp['check_in']),
          check_out=get_int_date(temp['check_out']), tv=tv, wifi=wifi, pool=pool,
          room_type=temp['room_type'], room_num=room_num)
+
         db.session.add(reservation)
         db.session.commit()
         flash(f'Your reservation has been created!','success')
         return redirect(url_for('index'))
     else:
-        flash(f'Error!','danger')
-        print('no validate')
+        flash(f'Error! Please check your fields below.','danger')
         return render_template('make_reservation.html', title="Booking", reservation=reservation, form=form)
 
 @app.route('/employee_portal', methods=['GET'])
@@ -112,8 +110,8 @@ def employee_login():
             #next_page = request.args.get('next')
             #return redirect(next_page) if next_page else redirect(url_for('home'))
         #else:
-            #flash('Login Unsuccessful. Please check email and password', 'danger')
-        flash('You have been logged in!')
+            #flash('Login Unsuccessful. Please check email and password', 'error')
+        flash('You have been logged in!', 'success')
         return redirect(url_for('employee_portal'))
     return render_template('employee_login.html', title = "Login", form = form)
 
@@ -138,7 +136,7 @@ def employee_registration():
         employee = Employee(first_name=form.first_name.data, last_name=form.last_name.data, email=form.email.data, password=hashed_password, admin_flag=flag)
         db.session.add(employee)
         db.session.commit()
-        flash(f'Your account has been create! You are now able to log in','success')
+        flash(f'Your account has been created! You are now able to log in','success')
         return redirect(url_for('employee_login'))
     return render_template('employee_registration.html', title="Register", form=form)
 

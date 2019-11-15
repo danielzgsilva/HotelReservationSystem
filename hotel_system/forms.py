@@ -1,7 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField, IntegerField
-from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
-import sqlite3 as sql
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField, IntegerField, DateField
+from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError, NumberRange
 from hotel_system.models import Employee
 
 # Form for user Login
@@ -37,5 +36,9 @@ class ReservationForm(FlaskForm):
     last_name = StringField('Last Name', validators=[DataRequired(), Length(min=1, max=20)])
     email = StringField('Email', validators =[DataRequired(), Email()])
     phone = StringField('Phone Number', validators = [DataRequired(), Length(min=10, max=12)])
-    credit_card = StringField('Credit Card Number', validators = [DataRequired(), Length(min=19, max=20)])
+    credit_card = StringField('Credit Card Number', validators = [DataRequired(), Length(min=16, max=20, message='Invalid Card Number')])
+    expiry_month = StringField('Expiration Month', validators=[DataRequired(), Length(min=2, max=2, message='Invalid Month')])
+    expiry_year = StringField('Expiration Year', validators=[DataRequired(), Length(min=4, max=4, message='Invalid Year')])
+    card_ccv = StringField('CCV', validators=[DataRequired(), Length(min=3, max=3, message='Invalid CCV')])
+    card_name = StringField('Name on the Card', validators=[DataRequired(), Length(min=1, max=20)])
     submit = SubmitField('Place Reservation')
