@@ -1,22 +1,38 @@
 import sqlite3 as sql
+from datetime import datetime
 
 def get_int_date(date):
 
     # dates are inputted in this format: 2019-09-17
-    data = date.split('-')
+    if isinstance(date, int):
+        return date
 
     # need to put in int format: 09170219
-    int_date = int(data[1] + data[2] + data[0])
+    date = int(date.replace('-', ''))
 
-    return int_date
+    return date
+
+class temp_reservation:
+    def __init__(self, check_in, check_out, room_type):
+        self.check_in = check_in
+        self.check_out = check_out
+        self.room_type = room_type
+
+        # Price per night depending on room selection
+        prices = {'single': 90, 'double': 150, 'deluxe': 250}
+        self.price_per_night = prices[self.room_type]
+
+        # Calculate length of stay
+        delta = datetime.strptime(check_out, "%Y-%m-%d").date() - datetime.strptime(check_in, "%Y-%m-%d").date()
+        self.length = delta.days
 
 def get_availability(num_guests, date_in, date_out):
     # Connect to database
-    conn = sql.connect('HotelDB.db')
+    conn = sql.connect('hotel_system/HotelDB.db')
     cur = conn.cursor()
 
     # Create query which will search the reservations table for open rooms
-    query = ('select * from room where '
+    query = ('select room_num, room_type from room where '
              '{} <= capacity and not exists '
              '(select 1 from reservation where '
              'room.room_num = reservation.room_num '
@@ -29,18 +45,21 @@ def get_availability(num_guests, date_in, date_out):
              'or '
              'check_out between {} and {}))'.format(num_guests, date_in, date_out, date_in, date_out, date_in, date_out))
 
+
     single_count = 0
     double_count = 0
     deluxe_count = 0
+    cur.execute(query)
+    rooms = cur.fetchall()
 
     # Counting the number of rooms available, for each room type
-    for row in cur.execute(query):
-        if row[1] == 'Single':
+    for room in rooms:
+        if room[1] == 'single':
             single_count += 1
-        elif row[1] == 'Double':
+        elif room[1] == 'double':
             double_count += 1
-        elif row[1] == 'Deluxe':
+        elif room[1] == 'deluxe':
             deluxe_count += 1
     conn.close()
     # Return availability
-    return single_count, double_count, deluxe_count
+    return single_count, double_count, deluxe_count, rooms

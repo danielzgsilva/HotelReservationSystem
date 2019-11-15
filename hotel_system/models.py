@@ -17,14 +17,14 @@ class Reservation(db.Model):
     first_name = db.Column(db.String(120), nullable=False)
     last_name = db.Column(db.String(120), nullable=False)
     email = db.Column(db.String(120), nullable=False)
-    phone = db.Column(db.String(10), nullable = False)
+    phone = db.Column(db.String(12), nullable = False)
     date_created = db.Column(db.DateTime, nullable = False, default = datetime.utcnow)
-    credit_card = db.Column(db.String(19), nullable = False)
+    credit_card = db.Column(db.String(20), nullable = False)
     check_in = db.Column(db.Integer, nullable=False)
     check_out = db.Column(db.Integer, nullable=False)
-    tv = db.Column(db.Boolean, nullable = False)
-    wifi = db.Column(db.Boolean, nullable = False)
-    pool = db.Column(db.Boolean, nullable = False)
+    tv = db.Column(db.Boolean, nullable = False, default = False)
+    wifi = db.Column(db.Boolean, nullable = False, default = False)
+    pool = db.Column(db.Boolean, nullable = False, default = False)
     room_type = db.Column(db.String(6), nullable = False)
     room_num = db.Column(db.Integer)
 
@@ -48,5 +48,3 @@ class Room(db.Model):
 
     def __repr__(self):
         return f"Room('{self.room_num}', '{self.room_type}', '{self.capacity}')"
-
-

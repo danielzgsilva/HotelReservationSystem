@@ -16,6 +16,7 @@
         <div class="container"><br>
             <div class="jumbotron center">
                 <form action="{{ url_for('store_reservation', reservation=reservation.length) }}" method="post" class="reservation-form">
+                  {{ form.hidden_tag() }}
                     <h1 class="font-weight-medium">Complete Your Reservation!</h1><br>
                     <p>You've selected a {{ reservation.room_type }} room stay for {{ reservation.length }} nights, beginning on {{ reservation.check_in }}<br> We just need a few more details to complete your reservation!</p>
                         <h4 class="font-weight-light">Additional Features</h4>
@@ -94,7 +95,83 @@
                             </tr>
                           </tbody>
                         </table>
-                        <h4 class="font-weight-light">Personal Information</h4>
+                        <fieldset class="form-group">
+                                  <legend class ="border-bottom mb-4"><h4>Personal Information</h4></legend>
+                           <div class = "form-group">
+                  					{{ form.first_name.label(class="form-control-label") }}
+
+                  					{% if form.first_name.errors %}
+                  						{{ form.first_name(class="form-control form-control-lg is-invalid") }}
+                  						<div class="invalid-feedback">
+                  							{% for error in form.first_name.errors %}
+                  								<span>{{ error }}</span>
+                  							{% endfor %}
+                  						</div>
+                  					{% else %}
+                  						{{ form.first_name(class="form-control form-control-lg") }}
+                  					{% endif %}
+                  				</div>
+                               <div class = "form-group">
+                  					{{ form.last_name.label(class="form-control-label") }}
+
+                  					{% if form.last_name.errors %}
+                  						{{ form.last_name(class="form-control form-control-lg is-invalid") }}
+                  						<div class="invalid-feedback">
+                  							{% for error in form.last_name.errors %}
+                  								<span>{{ error }}</span>
+                  							{% endfor %}
+                  						</div>
+                  					{% else %}
+                  						{{ form.last_name(class="form-control form-control-lg") }}
+                  					{% endif %}
+                  				</div>
+                  				<div class = "form-group">
+                  					{{ form.email.label(class="form-control-label") }}
+
+                  					{% if form.email.errors %}
+                  						{{ form.email(class="form-control form-control-lg is-invalid") }}
+                  						<div class="invalid-feedback">
+                  							{% for error in form.email.errors %}
+                  								<span>{{ error }}</span>
+                  							{% endfor %}
+                  						</div>
+                  					{% else %}
+                  						{{ form.email(class="form-control form-control-lg") }}
+                  					{% endif %}
+                  				</div>
+                  				<div class = "form-group">
+                  					{{ form.phone.label(class="form-control-label") }}
+
+                  					{% if form.phone.errors %}
+                  						{{ form.phone(class="form-control form-control-lg is-invalid") }}
+                  						<div class="invalid-feedback">
+                  							{% for error in form.phone.errors %}
+                  								<span>{{ error }}</span>
+                  							{% endfor %}
+                  						</div>
+                  					{% else %}
+                  						{{ form.phone(class="form-control form-control-lg") }}
+                  					{% endif %}
+                  				</div>
+                  				<div class = "form-group">
+                  					{{ form.credit_card.label(class="form-control-label") }}
+
+                  					{% if form.credit_card.errors %}
+                  						{{ form.credit_card(class="form-control form-control-lg is-invalid") }}
+                  						<div class="invalid-feedback">
+                  							{% for error in form.credit_card.errors %}
+                  								<span>{{ error }}</span>
+                  							{% endfor %}
+                  						</div>
+                  					{% else %}
+                  						{{ form.credit_card(class="form-control form-control-lg") }}
+                  					{% endif %}
+                  				</div>
+                  			</fieldset>
+                        <div class="form-group">
+                  				{{ form.submit(class="btn btn-outline-info") }}
+                  			</div>
+                        <!--
                             <div class="row">
                               <div class="col-md-6 col-sm-6 col-xs-6">
                                   <span class="help-block text-muted" > First Name</span>
@@ -150,6 +227,7 @@
                                   <input type="submit"  class="btn btn-warning btn-block" value="PAY NOW" />
                               </div>
                         </div>
+                        -->
                 </form>
             </div>
         </div>

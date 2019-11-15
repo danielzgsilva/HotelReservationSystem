@@ -31,7 +31,11 @@ class RegistrationForm(FlaskForm):
         if str(key) not in ['Admin', 'Standard']:
             raise ValidationError('Invalid key. Please try again.')
 
-
-
-
-
+# form for reservation
+class ReservationForm(FlaskForm):
+    first_name = StringField('First Name', validators=[DataRequired(), Length(min=1, max=20)])
+    last_name = StringField('Last Name', validators=[DataRequired(), Length(min=1, max=20)])
+    email = StringField('Email', validators =[DataRequired(), Email()])
+    phone = StringField('Phone Number', validators = [DataRequired(), Length(min=10, max=12)])
+    credit_card = StringField('Credit Card Number', validators = [DataRequired(), Length(min=19, max=20)])
+    submit = SubmitField('Place Reservation')

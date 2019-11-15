@@ -1,18 +1,20 @@
-from hotel_system.forms import RegistrationForm, LoginForm
-from hotel_system.models import Employee
+from hotel_system.forms import RegistrationForm, LoginForm, ReservationForm
+from hotel_system.models import Employee, Reservation
 from flask import Flask, render_template, send_from_directory, request, session, flash, url_for, redirect
 from hotel_system import app, db, bcrypt
-from hotel_system.reservation import Reservation
-from hotel_system.utils import get_int_date, get_availability
+from hotel_system.utils import get_int_date, get_availability, temp_reservation
+from datetime import datetime
 
 import os
 import secrets
 
 @app.route("/")
+@app.route("/home")
 def index():
     return render_template('index.html', title='Home', single_count = -1, double_count = -1, deluxe_count = -1)
 
 @app.route('/', methods=['GET', 'POST'])
+@app.route('/home', methods=['GET', 'POST'])
 def check_availability():
     # Get user input
     num_guests = int(request.form.get('guest_num_input'))
@@ -21,49 +23,74 @@ def check_availability():
 
     date_in = get_int_date(check_in)
     date_out = get_int_date(check_out)
+    today = int(str(datetime.today().year) + str(datetime.today().month) + str(datetime.today().day))
+
+    if date_out - date_in <= 0 or date_in < today:
+        message = 'The dates are not valid!  '+str(today)+'  '+ str(date_in)+ '  ' + str(date_out)
+        return render_template('failure.html', title='Home', message=message)
 
     # Querying hotel database
-    single_count, double_count, deluxe_count = get_availability(num_guests, date_in, date_out)
+    single_count, double_count, deluxe_count, avail_rooms = get_availability(num_guests, date_in, date_out)
+
+    session['available'] = avail_rooms
 
     return render_template('index.html', title='Home', num_guests = num_guests, check_in = check_in, check_out = check_out,
                            single_count = single_count, double_count = double_count, deluxe_count = deluxe_count, scroll = 'bottom')
 
 @app.route('/booking', methods=['GET'])
 def make_reservation():
+    form = ReservationForm()
+
     # Get user input
     check_in = request.args.get('check_in')
     check_out = request.args.get('check_out')
     room_type = request.args.get('room')
 
+    session['available'] = [i for i in session['available'] if i[1] == room_type]
     # Instantiate reservation class
-    new_reservation = Reservation(check_in, check_out, room_type)
+    new_reservation = temp_reservation(check_in, check_out, room_type)
 
     # Store reservation in flask session in order for other routes to access it's variables
     session['new_reservation'] = new_reservation.__dict__
 
-    return render_template('make_reservation.html', title='Booking', reservation=new_reservation)
+    return render_template('make_reservation.html', title='Booking', reservation=new_reservation, form=form)
 
-@app.route('/booking', methods=['GET', 'POST'])
+@app.route('/booking_success', methods=['GET', 'POST'])
 def store_reservation():
     # Rebuild reservation class from session variables
-    reservation_vars = session['new_reservation']
-    reservation = Reservation(reservation_vars['check_in'], reservation_vars['check_out'], reservation_vars['room_type'])
+    temp = session['new_reservation']
+    reservation = temp_reservation(temp['check_in'], temp['check_out'], temp['room_type'])
 
-    # Get user input
-    first_name = request.form.get('first_name')
-    last_name = request.form.get('last_name')
-    email = request.form.get('email')
-    phone = request.form.get('phone')
-    wifi = request.form.get('wifi')
-    tv = request.form.get('tv')
-    parking = request.form.get('parking')
-    pool = request.form.get('pool')
+    form = ReservationForm()
+    #wifi = False if request.form.get('wifi') is None else True
 
-    # Store reservation data in hotel database
-    reservation.store_reservation(first_name, last_name, email, phone, wifi, tv, parking, pool)
+    if form.validate_on_submit():
+        # Get user input
+        '''first_name = request.form.get('first_name')
+        last_name = request.form.get('last_name')
+        email = request.form.get('email')
+        phone = request.form.get('phone')'''
+        wifi = False if request.form.get('wifi') is None else True
+        tv = False if request.form.get('tv') is None else True
+        parking = False if request.form.get('parking') is None else True
+        pool = False if request.form.get('pool') is None else True
 
-    message = "We've booked your stay for {} nights! We look forward towards seeing you!".format(reservation.length)
-    return render_template('success.html', title='Success', message = message)
+        room_nums = [int(i[0]) for i in session['available']]
+        room_num = min(room_nums)
+
+        reservation = Reservation(first_name=form.first_name.data, last_name=form.last_name.data,
+         email=form.email.data, phone=form.phone.data,
+         credit_card=form.credit_card.data, check_in=get_int_date(temp['check_in']),
+         check_out=get_int_date(temp['check_out']), tv=tv, wifi=wifi, pool=pool,
+         room_type=temp['room_type'], room_num=room_num)
+        db.session.add(reservation)
+        db.session.commit()
+        flash(f'Your reservation has been created!','success')
+        return redirect(url_for('index'))
+    else:
+        flash(f'Error!','danger')
+        print('no validate')
+        return render_template('make_reservation.html', title="Booking", reservation=reservation, form=form)
 
 @app.route('/employee_portal', methods=['GET'])
 def employee_portal():
@@ -126,4 +153,3 @@ def page_not_found(e):
 @app.errorhandler(500)
 def internal_server_error(e):
     return render_template('index.html'), 500
-
