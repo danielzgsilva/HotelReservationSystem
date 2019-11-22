@@ -42,3 +42,15 @@ class ReservationForm(FlaskForm):
     card_ccv = StringField('CCV', validators=[DataRequired(), Length(min=3, max=3, message='Invalid CCV')])
     card_name = StringField('Name on the Card', validators=[DataRequired(), Length(min=1, max=20)])
     submit = SubmitField('Place Reservation')
+
+# form for creating a work order
+class WorkOrderForm(FlaskForm):
+    room_num = IntegerField('Room Number', validators=[DataRequired()])
+    type = StringField('Type (20 Character Limit)', validators=[DataRequired(), Length(max=20)])
+    comments = TextAreaField('Comments (120 Character Limit)', validators=[Length(max=120)])
+    submit = SubmitField('Place Work Order')
+
+    def validate_room_num(self, room_num):
+        valid = 1 <= room_num.data <= 30
+        if not valid:
+            raise ValidationError('Room number is not valid. Please input a valid room number.')

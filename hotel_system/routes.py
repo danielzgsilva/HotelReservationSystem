@@ -1,9 +1,10 @@
-from hotel_system.forms import RegistrationForm, LoginForm, ReservationForm
+from hotel_system.forms import RegistrationForm, LoginForm, ReservationForm, WorkOrderForm
 from hotel_system.models import Employee, Reservation
 from flask import Flask, render_template, send_from_directory, request, session, flash, url_for, redirect
 from hotel_system import app, db, bcrypt
 from hotel_system.utils import get_int_date, get_availability, temp_reservation
 from datetime import datetime
+from flask_login import login_user, current_user, logout_user, login_required
 
 import os
 import secrets
@@ -91,35 +92,36 @@ def store_reservation():
         return render_template('make_reservation.html', title="Booking", reservation=reservation, form=form)
 
 @app.route('/employee_portal', methods=['GET'])
+@login_required
 def employee_portal():
     return render_template('employee_portal.html', title='Employee Portal')
 
 # employee login route
 @app.route('/employee_login', methods=['GET','POST'])
 def employee_login():
-    #if current_user.is_authenticated:
-        #return redirect(url_for('home'))
+    if current_user.is_authenticated:
+        return redirect(url_for('employee_portal'))
     form = LoginForm()
     if form.validate_on_submit():
         # checking user is in database
-        #employee = Employee.query.filter_by(email=form.email.data).first()
-        #if employee and bcrypt.check_password_hash(employee.password, form.password.data):
-            #login_user(user, remember=form.remember.data)
+        employee = Employee.query.filter_by(email=form.email.data).first()
+        if employee and bcrypt.check_password_hash(employee.password, form.password.data):
+            login_user(employee)
+            flash('You have been logged in!', 'success')
+            return redirect(url_for('employee_portal'))
             # get's the page that user tried to enter that
             # redirected then to log in
             #next_page = request.args.get('next')
             #return redirect(next_page) if next_page else redirect(url_for('home'))
-        #else:
-            #flash('Login Unsuccessful. Please check email and password', 'error')
-        flash('You have been logged in!', 'success')
-        return redirect(url_for('employee_portal'))
+        else:
+            flash('Login Unsuccessful. Please check email and password', 'error')
     return render_template('employee_login.html', title = "Login", form = form)
 
 @app.route('/employee_registration', methods=['GET','POST'])
 def employee_registration():
     # redirects user if they're already logged in
-    #if current_user.is_authenticated:
-        #return redirect(url_for('home'))
+    if current_user.is_authenticated:
+        return redirect(url_for('employee_portal'))
 
     form = RegistrationForm()
     if form.validate_on_submit():
@@ -139,6 +141,21 @@ def employee_registration():
         flash(f'Your account has been created! You are now able to log in','success')
         return redirect(url_for('employee_login'))
     return render_template('employee_registration.html', title="Register", form=form)
+
+@app.route('/employee_logout')
+def employee_logout():
+    logout_user()
+    return redirect(url_for('employee_login'))
+
+@app.route('/create_work_order', methods=['GET','POST'])
+@login_required
+def create_work_order():
+    form = WorkOrderForm()
+    if form.validate_on_submit():
+        flash(f'The work order has been assigned!', 'success')
+        return redirect(url_for('create_work_order'))
+    return render_template('create_work_order.html', title="create_work_order", form=form)
+
 
 @app.route('/<filename>')
 def load_image(filename):

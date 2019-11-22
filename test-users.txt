@@ -1,0 +1,4 @@
+Test User Logins:
+
+admin@test.com 						adminpass
+standard@test.com 					standardpass

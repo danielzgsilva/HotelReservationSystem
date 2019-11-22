@@ -21,9 +21,8 @@
               {% endif %}
              {% endwith %}
         <header class="jumbotron my-4">
-          <h1 class="display-3">Welcome to the Employee Portal!</h1>
+          <h1 class="display-3">Welcome to the Employee Portal, {{ current_user.first_name }} {{ current_user.last_name }}!</h1>
           <p class="lead">This portal enables you to assign rooms to guests, create and edit work orders, print lodging receipts and query guest data from the database. Your access here is dependent on your account level.</p>
-          <a href="#" class="btn btn-primary btn-lg">Logout</a>
         </header>
 
         <div class="row text-center">
