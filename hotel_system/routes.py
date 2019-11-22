@@ -1,5 +1,5 @@
-from hotel_system.forms import RegistrationForm, LoginForm, ReservationForm, WorkOrderForm
-from hotel_system.models import Employee, Reservation, WorkOrder
+from hotel_system.forms import RegistrationForm, LoginForm, ReservationForm, WorkOrderForm, RoomServiceForm, PrintReceiptForm
+from hotel_system.models import Employee, Reservation, WorkOrder, RoomService
 from flask import Flask, render_template, send_from_directory, request, session, flash, url_for, redirect
 from hotel_system import app, db, bcrypt
 from hotel_system.utils import get_int_date, get_availability, temp_reservation
@@ -160,8 +160,63 @@ def create_work_order():
         db.session.commit()
         flash(f'The work order has been assigned!', 'success')
         return redirect(url_for('create_work_order'))
-    return render_template('create_work_order.html', title="create_work_order", form=form)
+    return render_template('create_work_order.html', title="Create Work Order", form=form)
 
+
+@app.route('/create_service_order', methods=['GET','POST'])
+@login_required
+def create_service_order():
+    form = RoomServiceForm()
+    if form.validate_on_submit():
+        standard_employees = Employee.query.filter_by(admin_flag=0).all()
+        employee_id = random.choice(standard_employees).id
+
+        #calculate price
+        #add to srvices string
+        services_list = []
+        price = 0.00
+        if form.toiletries.data:
+            price = price + 2.00
+            services_list.append('toiletries')
+        if form.food.data:
+            price = price + 5.00
+            services_list.append('food')
+        if form.bedding.data:
+            price = price + 3.00
+            services_list.append('bedding')
+        if form.other.data:
+            price = price + 6.00
+            services_list.append('bedding')
+
+        comma = ","
+        services_string = comma.join(services_list)
+        print(services_string)
+        print(price)
+        service_order = RoomService(room_num=form.room_num.data, employee_id=employee_id, price=price, services=services_string, comments=form.comments.data)
+        db.session.add(service_order)
+        db.session.commit()
+        flash(f'The service order has been assigned!', 'success')
+        return redirect(url_for('create_service_order'))
+    return render_template('create_service_order.html', title="Create Service Order", form=form)
+
+@app.route('/receipt/', methods=['GET','POST'])
+@login_required
+def print_receipt():
+    form = PrintReceiptForm()
+    if form.validate_on_submit():
+        reservation_data = Reservation.query.filter_by(email = form.email.data, room_num = form.room_num.data).all()[-1]
+
+        if reservation_data is None:
+            flash(f'Information not found! Please try again.', 'danger')
+
+        prices = {'single': 90, 'double': 150, 'deluxe': 250}
+        cost_per_night = prices[reservation_data.room_type]
+        reservation_data.date_created = str(reservation_data.date_created).split()[0]
+        reservation_data.room_type = str(reservation_data.room_type).capitalize()
+        service_data = None
+        flash(f'You may print the receipt below!', 'success')
+        return render_template('receipt.html', title='Receipt', reservation = reservation_data, cost_pn = cost_per_night, room_service = service_data)
+    return render_template('print_receipt.html', title="Print Receipt", form=form)
 
 @app.route('/<filename>')
 def load_image(filename):

@@ -1,0 +1,144 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<style>
+</style>
+<body>
+    <main role="main">
+        <div class="container"><br>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+               {% if messages %}
+                 <ul class="flashes">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">{{ message }}
+                            <button type="button" class="close" data-dismiss={{ category }} aria-label="Close">
+                                <span aria-hidden="true">x</span>
+                            </button>
+                        </div>
+                    {% endfor %}
+                </ul>
+              {% endif %}
+             {% endwith %}
+             <div class="jumbotron center">
+         		<form action="" method="POST">
+         			{{ form.hidden_tag() }}
+         			<fieldset class="form-group">
+                <legend class ="border-bottom mb-4"><h1>Create Service Order</h1></legend><br>
+                    <p>Use this action to create service orders round the hotel.
+                    <br>Provide an order type and assign a room.</p>
+                    <div class="row">
+                        <div class="col-xs-6 sm-6 col-md-6 col-lg-6">
+           				    <div class = "form-group">
+           					{{ form.room_num.label(class="form-control-label") }}
+
+           					{% if form.room_num.errors %}
+           						{{ form.room_num(class="form-control form-control-lg is-invalid") }}
+           						<div class="invalid-feedback">
+           							{% for error in form.room_num.errors %}
+           								<span>{{ error }}</span>
+           							{% endfor %}
+           						</div>
+           					{% else %}
+           						{{ form.room_num(class="form-control form-control-lg") }}
+           					{% endif %}
+                             </div>
+                        </div>
+                    </div>
+										<div class="bloolean-row row">
+										<div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+											<div class = "form-group">
+
+												{{ form.toiletries.label(class="form-control-label") }}
+
+												{% if form.toiletries.errors %}
+													{{ form.toiletries(class="form-control form-control-lg is-invalid") }}
+													<div class="invalid-feedback">
+														{% for error in form.toiletries.errors %}
+															<span>{{ error }}</span>
+														{% endfor %}
+													</div>
+												{% else %}
+													{{ form.toiletries(class="form-control form-control-lg") }}
+												{% endif %}
+											</div>
+										</div>
+										<div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+										<div class = "form-group">
+											{{ form.food.label(class="form-control-label") }}
+
+											{% if form.food.errors %}
+												{{ form.food(class="form-control form-control-lg is-invalid") }}
+												<div class="invalid-feedback">
+													{% for error in form.food.errors %}
+														<span>{{ error }}</span>
+													{% endfor %}
+												</div>
+											{% else %}
+												{{ form.food(class="form-control form-control-lg") }}
+											{% endif %}
+										</div>
+										</div>
+										<div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+										<div class = "form-group">
+											{{ form.bedding.label(class="form-control-label") }}
+
+											{% if form.bedding.errors %}
+												{{ form.bedding(class="form-control form-control-lg is-invalid") }}
+												<div class="invalid-feedback">
+													{% for error in form.bedding.errors %}
+														<span>{{ error }}</span>
+													{% endfor %}
+												</div>
+											{% else %}
+												{{ form.bedding(class="form-control form-control-lg") }}
+											{% endif %}
+										</div>
+										</div>
+										<div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+										<div class = "form-group">
+											{{ form.other.label(class="form-control-label") }}
+
+											{% if form.other.errors %}
+												{{ form.other(class="form-control form-control-lg is-invalid") }}
+												<div class="invalid-feedback">
+													{% for error in form.other.errors %}
+														<span>{{ error }}</span>
+													{% endfor %}
+												</div>
+											{% else %}
+												{{ form.other(class="form-control form-control-lg") }}
+											{% endif %}
+										</div>
+										</div>
+										</div>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                            <div class = "form-group">
+         					{{ form.comments.label(class="form-control-label") }}
+
+         					{% if form.comments.errors %}
+         						{{ form.comments(class="form-control form-control-lg is-invalid") }}
+         						<div class="invalid-feedback">
+         							{% for error in form.comments.errors %}
+         								<span>{{ error }}</span>
+         							{% endfor %}
+         						</div>
+         					{% else %}
+         						{{ form.comments(class="form-control form-control-lg") }}
+         					{% endif %}
+         				</div>
+                        </div>
+                    </div>
+         			</fieldset>
+         			<div class="form-group">
+         				{{ form.submit(class="btn btn-outline-info") }}
+         			</div>
+         		</form>
+         	</div>
+        </div>
+    </main>
+</body>
+
+<script>
+</script>
+{% endblock %}

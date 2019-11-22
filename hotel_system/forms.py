@@ -54,3 +54,24 @@ class WorkOrderForm(FlaskForm):
         valid = 1 <= room_num.data <= 30
         if not valid:
             raise ValidationError('Room number is not valid. Please input a valid room number.')
+
+# form for room services
+class RoomServiceForm(FlaskForm):
+    room_num = IntegerField('Room Number', validators=[DataRequired()])
+    toiletries = BooleanField('Toiletries $2.00')
+    food = BooleanField('Food $5.00')
+    bedding = BooleanField('Bedding $3.00')
+    other = BooleanField('Other (specify in comments) $6.00')
+    comments = TextAreaField('Comments (120 Character Limit)', validators=[Length(max=20)])
+    submit = SubmitField('Place Room Service Order')
+
+# form for receipt printing
+class PrintReceiptForm(FlaskForm):
+    email = StringField('Email', validators =[DataRequired(), Email()])
+    room_num = IntegerField('Room Number', validators=[DataRequired()])
+    submit = SubmitField('Get Receipt')
+
+    def validate_room_num(self, room_num):
+        valid = 1 <= room_num.data <= 30
+        if not valid:
+            raise ValidationError('Room number is not valid. Please input a valid room number.')

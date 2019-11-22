@@ -1,0 +1,93 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<style>
+</style>
+<body>
+    <main role="main">
+        <div class="container"><br>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+               {% if messages %}
+                 <ul class="flashes">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">{{ message }}
+                            <button type="button" class="close" data-dismiss={{ category }} aria-label="Close">
+                                <span aria-hidden="true">x</span>
+                            </button>
+                        </div>
+                    {% endfor %}
+                </ul>
+              {% endif %}
+             {% endwith %}
+                <div class="container">
+                    <div class="jumbotron center">
+                        <legend class ="border-bottom mb-4"><h1>{{ reservation.first_name }}'s Receipt</h1></legend><br>
+                        <strong>First name: </strong>{{ reservation.first_name }}<br>
+                        <strong>Last name: </strong>{{ reservation.last_name }}<br>
+                        <strong>Email: </strong>{{ reservation.email }}<br>
+                        <strong>Date Reserved: </strong>{{ reservation.date_created }}<br>
+                        {% set length = reservation.check_out - reservation.check_in %}
+                        <strong>Length of Stay: </strong>{{ length }}<br><br>
+                        <h4 class="font-weight-light">Price Breakdown</h4>
+                        <table class="table table-hover">
+                          <thead>
+                            <tr>
+                              <th scope="col"></th>
+                              <th scope="col">Price</th>
+                              <th scope="col">Total Cost</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <th scope="row" id="room-type">{{ reservation.room_type }} Room</th>
+                              <td>${{ cost_pn }}/night</td>
+                              {% set room_price = cost_pn * length %}
+                              <td>${{ room_price }}</td>
+                              <td id="room_price"></td>
+                            </tr>
+                            <tr>
+                              <th scope="row">WiFi</th>
+                              <td>$10/night</td>
+                              {% set wifi_price = 10 * reservation.wifi * length %}
+                              <td>${{ wifi_price }}</td>
+                              <td id="wifi_price"></td>
+                            </tr>
+                            <tr>
+                              <th scope="row">Parking</th>
+                              <td>$20 flat rate</td>
+                              {% set parking_price = 10 * 1 %}
+                              <td>${{ parking_price }} (we dont have this)</td>
+                              <td id="parking_price"></td>
+                            </tr>
+                            <tr>
+                              <th scope="row">Cable TV</th>
+                              <td>$10/night</td>
+                              {% set tv_price = 10 * reservation.tv * length %}
+                              <td>{{ tv_price }}</td>
+                              <td id="tv_price"></td>
+                            </tr>
+                            <tr>
+                              <th scope="row">Pool Access</th>
+                              <td>$30 flat rate</td>
+                              {% set pool_price = 30 * reservation.pool %}
+                              <td>${{ pool_price }}</td>
+                              <td id="pool_price"></td>
+                            </tr>
+                            <tr>
+                              <th scope="row">Total Cost</th>
+                              <td></td>
+                              <td>{{ room_price + wifi_price + tv_price + parking_price + pool_price }}</td>
+                              <td id="total_price"></td>
+                            </tr>
+                          </tbody>
+                        </table>
+                    </div>
+                </div>
+         	</div>
+        </div>
+    </main>
+</body>
+
+<script>
+</script>
+{% endblock %}

@@ -46,6 +46,17 @@ class WorkOrder(db.Model):
     def __repr__(self):
         return f"WorkOrder('{self.type}', '{self.room_num}', '{self.employee_id}')"
 
+class RoomService(db.Model):
+    order_number = db.Column(db.Integer, nullable = False, primary_key=True)
+    room_num = db.Column(db.Integer, nullable=False)
+    employee_id = db.Column(db.Integer, nullable=False)
+    price = db.Column(db.Float, nullable=False)
+    services = db.Column(db.String, nullable=False)
+    comments = db.Column(db.Text)
+
+    def __repr__(self):
+        return f"RoomService('{self.price}', '{self.room_num}', '{self.employee_id}', '{self.services}')"
+
 class Room(db.Model):
     room_num = db.Column(db.Integer, nullable = False, primary_key=True)
     room_type = db.Column(db.String(6), nullable=False)
