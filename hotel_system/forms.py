@@ -62,7 +62,7 @@ class RoomServiceForm(FlaskForm):
     food = BooleanField('Food $5.00')
     bedding = BooleanField('Bedding $3.00')
     other = BooleanField('Other (specify in comments) $6.00')
-    comments = TextAreaField('Comments (120 Character Limit)', validators=[Length(max=20)])
+    comments = TextAreaField('Comments (120 Character Limit)', validators=[Length(max=120)])
     submit = SubmitField('Place Room Service Order')
 
 # form for receipt printing
@@ -75,3 +75,10 @@ class PrintReceiptForm(FlaskForm):
         valid = 1 <= room_num.data <= 30
         if not valid:
             raise ValidationError('Room number is not valid. Please input a valid room number.')
+
+class ViewReservationsForm(FlaskForm):
+    first_name = StringField('First Name')
+    last_name = StringField('Last Name')
+    email = StringField('Email')
+    room_type = StringField('Room Type')
+    submit = SubmitField('See Reservations')

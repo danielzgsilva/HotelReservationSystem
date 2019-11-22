@@ -11,7 +11,9 @@
                  <ul class="flashes">
                     {% for category, message in messages %}
                         <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">{{ message }}
-                            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                            <button type="button" class="close" data-dismiss={{ category }} aria-label="Close">
+                                <span aria-hidden="true">x</span>
+                            </button>
                         </div>
                     {% endfor %}
                 </ul>
@@ -21,42 +23,41 @@
          		<form action="" method="POST">
          			{{ form.hidden_tag() }}
          			<fieldset class="form-group">
-                <legend class ="border-bottom mb-4"><h1>Print Receipt</h1></legend><br>
-                    <p>Use this action to print a receipt for a guest.
-                    <br>Simply provide the user's email and room number.</p>
-                <!-- attempt to make room_num field smaller -->
+                <legend class ="border-bottom mb-4"><h1>Fill out the guest's information to filter reservations: </h1></legend><br>
                     <div class="row">
                         <div class="col-xs-6 sm-6 col-md-6 col-lg-6">
            				    <div class = "form-group">
-           					{{ form.email.label(class="form-control-label") }}
+           					{{ form.first_name.label(class="form-control-label") }}
 
-           					{% if form.email.errors %}
-           						{{ form.email(class="form-control form-control-lg is-invalid") }}
+           					{% if form.first_name.errors %}
+           						{{ form.first_name(class="form-control form-control-lg is-invalid") }}
            						<div class="invalid-feedback">
-           							{% for error in form.email.errors %}
+           							{% for error in form.first_name.errors %}
            								<span>{{ error }}</span>
            							{% endfor %}
            						</div>
            					{% else %}
-           						{{ form.email(class="form-control form-control-lg") }}
+           						{{ form.first_name(class="form-control form-control-lg") }}
            					{% endif %}
                              </div>
                         </div>
+                    </div>
+										<div class="row">
                         <div class="col-xs-6 sm-6 col-md-6 col-lg-6">
-                            <div class = "form-group">
-         					{{ form.room_num.label(class="form-control-label") }}
+           				    <div class = "form-group">
+           					{{ form.last_name.label(class="form-control-label") }}
 
-         					{% if form.room_num.errors %}
-         						{{ form.room_num(class="form-control form-control-lg is-invalid") }}
-         						<div class="invalid-feedback">
-         							{% for error in form.room_num.errors %}
-         								<span>{{ error }}</span>
-         							{% endfor %}
-         						</div>
-         					{% else %}
-         						{{ form.room_num(class="form-control form-control-lg") }}
-         					{% endif %}
-         				    </div>
+           					{% if form.last_name.errors %}
+           						{{ form.last_name(class="form-control form-control-lg is-invalid") }}
+           						<div class="invalid-feedback">
+           							{% for error in form.last_name.errors %}
+           								<span>{{ error }}</span>
+           							{% endfor %}
+           						</div>
+           					{% else %}
+           						{{ form.last_name(class="form-control form-control-lg") }}
+           					{% endif %}
+                             </div>
                         </div>
                     </div>
          			</fieldset>

@@ -1,4 +1,4 @@
-from hotel_system.forms import RegistrationForm, LoginForm, ReservationForm, WorkOrderForm, RoomServiceForm, PrintReceiptForm
+from hotel_system.forms import RegistrationForm, LoginForm, ReservationForm, WorkOrderForm, RoomServiceForm, PrintReceiptForm, ViewReservationsForm
 from hotel_system.models import Employee, Reservation, WorkOrder, RoomService
 from flask import Flask, render_template, send_from_directory, request, session, flash, url_for, redirect
 from hotel_system import app, db, bcrypt
@@ -186,12 +186,10 @@ def create_service_order():
             services_list.append('bedding')
         if form.other.data:
             price = price + 6.00
-            services_list.append('bedding')
+            services_list.append('other')
 
         comma = ","
         services_string = comma.join(services_list)
-        print(services_string)
-        print(price)
         service_order = RoomService(room_num=form.room_num.data, employee_id=employee_id, price=price, services=services_string, comments=form.comments.data)
         db.session.add(service_order)
         db.session.commit()
@@ -199,12 +197,13 @@ def create_service_order():
         return redirect(url_for('create_service_order'))
     return render_template('create_service_order.html', title="Create Service Order", form=form)
 
-@app.route('/receipt/', methods=['GET','POST'])
+@app.route('/receipt', methods=['GET','POST'])
 @login_required
 def print_receipt():
     form = PrintReceiptForm()
     if form.validate_on_submit():
         reservation_data = Reservation.query.filter_by(email = form.email.data, room_num = form.room_num.data).all()[-1]
+        room_service_data = RoomService.query.filter_by(room_num = form.room_num.data).all()
 
         if reservation_data is None:
             flash(f'Information not found! Please try again.', 'danger')
@@ -213,10 +212,42 @@ def print_receipt():
         cost_per_night = prices[reservation_data.room_type]
         reservation_data.date_created = str(reservation_data.date_created).split()[0]
         reservation_data.room_type = str(reservation_data.room_type).capitalize()
-        service_data = None
+        length_of_stay = (datetime.strptime(str(reservation_data.check_out), '%Y%m%d') - datetime.strptime(str(reservation_data.check_in), '%Y%m%d')).days
+
+        if room_service_data is not None:
+            room_services = {'toiletries': 0, 'food': 0, 'bedding': 0, 'other': 0}
+            # Loop through each individual order
+            for order in room_service_data:
+                # Loop through items on an order
+                for item in order.services.split(','):
+                    room_services[item.lower()] += 1
+
         flash(f'You may print the receipt below!', 'success')
-        return render_template('receipt.html', title='Receipt', reservation = reservation_data, cost_pn = cost_per_night, room_service = service_data)
+        return render_template('receipt.html', title='Receipt', reservation = reservation_data, length = length_of_stay, cost_pn = cost_per_night, room_service = room_services)
     return render_template('print_receipt.html', title="Print Receipt", form=form)
+
+@app.route('/view_reservations', methods=['GET', 'POST'])
+@login_required
+def view_reservations():
+    form = ViewReservationsForm()
+    reservations = Reservation.query.all()
+    print('This is the number of reservations before deletion: ')
+    print(len(reservations))
+
+    # removes unwanted results fron the list
+    for res in reservations:
+        if form.first_name.data is not "" and res.first_name.strip() is not form.first_name.data:
+            print(res.first_name.strip())
+            print(form.first_name.data)
+            print('the names above should not be the same!')
+            reservations.remove(res)
+            continue
+        if form.last_name.data is not "" and res.last_name is not form.last_name.data:
+            reservations.remove(res)
+            continue
+    print(len(reservations))
+    print(reservations)
+    return render_template('view_reservations.html', title="View Reservations", form=form)
 
 @app.route('/<filename>')
 def load_image(filename):

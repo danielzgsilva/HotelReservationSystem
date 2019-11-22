@@ -12,9 +12,8 @@
                  <ul class="flashes">
                     {% for category, message in messages %}
                         <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">{{ message }}
-                            <button type="button" class="close" data-dismiss={{ category }} aria-label="Close">
-                                <span aria-hidden="true">x</span>
-                            </button>
+                          <!-- do this for all flashes -->
+                            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
                         </div>
                     {% endfor %}
                 </ul>
