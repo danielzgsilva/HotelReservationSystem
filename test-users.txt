@@ -1,4 +1,11 @@
 Test User Logins:
 
 admin@test.com 						adminpass
+epicadmin@mail.com                  awesomepass1
+
+
+
+
+
 standard@test.com 					standardpass
+epicgamer@mail.com                  epicpass11

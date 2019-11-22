@@ -1,11 +1,12 @@
 from hotel_system.forms import RegistrationForm, LoginForm, ReservationForm, WorkOrderForm
-from hotel_system.models import Employee, Reservation
+from hotel_system.models import Employee, Reservation, WorkOrder
 from flask import Flask, render_template, send_from_directory, request, session, flash, url_for, redirect
 from hotel_system import app, db, bcrypt
 from hotel_system.utils import get_int_date, get_availability, temp_reservation
 from datetime import datetime
 from flask_login import login_user, current_user, logout_user, login_required
 
+import random
 import os
 import secrets
 
@@ -152,6 +153,11 @@ def employee_logout():
 def create_work_order():
     form = WorkOrderForm()
     if form.validate_on_submit():
+        standard_employees = Employee.query.filter_by(admin_flag=0).all()
+        employee_id = random.choice(standard_employees).id
+        work_order = WorkOrder(type=form.type.data, room_num=form.room_num.data, employee_id=employee_id, comments=form.comments.data)
+        db.session.add(work_order)
+        db.session.commit()
         flash(f'The work order has been assigned!', 'success')
         return redirect(url_for('create_work_order'))
     return render_template('create_work_order.html', title="create_work_order", form=form)
