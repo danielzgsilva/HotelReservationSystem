@@ -41,11 +41,11 @@
           <div class="col-lg-3 col-md-6 mb-4">
             <div class="card h-100">
               <div class="card-body">
-                <h4 class="card-title">Create Room Cleaning Order</h4>
-                <p class="card-text">Create a room cleaning request for a given room number. These are also created automatically after vacating a room.</p>
+                <h4 class="card-title">Create Room Work Order</h4>
+                <p class="card-text">Create a room cleaning or repair request for a given room number. These are also created automatically after vacating a room.</p>
               </div>
               <div class="card-footer">
-                <a href="#" class="btn btn-primary">Go!</a>
+                <a href="{{ url_for('create_work_order') }}" class="btn btn-primary">Go!</a>
               </div>
             </div>
           </div>
