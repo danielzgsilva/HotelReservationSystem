@@ -108,3 +108,21 @@ class ViewWorkOrderForm(FlaskForm):
 class EditWorkOrderForm(FlaskForm):
     comment = TextAreaField('Comment to add (120 Character Limit)', validators=[Length(max=120)])
     submit = SubmitField('Add Comment')
+
+class VacateRoomForm(FlaskForm):
+    room_num = IntegerField('Room Number', validators=[Optional()])
+    room_type = StringField('Room Type')
+    check_in = IntegerField('Check In', validators=[Optional()])
+    check_out = IntegerField('Check Out', validators=[Optional()])
+    phone = StringField('Guest Phone Number', validators=[Optional()])
+    email = StringField('Guest Email', validators=[Email(), Optional()])
+    submit = SubmitField('Filter Reservations')
+
+    def validate_room_num(self, room_num):
+        valid = 1 <= room_num.data <= 30
+        if not valid:
+            raise ValidationError('Room number is not valid. Please input a valid room number.')
+
+    def validate_room_type(self, room_type):
+        if room_type.data.strip().lower() not in ['single', 'double', 'deluxe', '']:
+            raise ValidationError('Room type is not valid. Please input a valid room type.')

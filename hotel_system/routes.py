@@ -1,4 +1,4 @@
-from hotel_system.forms import RegistrationForm, LoginForm, ReservationForm, WorkOrderForm, RoomServiceForm, PrintReceiptForm, ViewReservationsForm, ViewGuestsForm, ViewWorkOrderForm, EditWorkOrderForm
+from hotel_system.forms import RegistrationForm, LoginForm, ReservationForm, WorkOrderForm, RoomServiceForm, PrintReceiptForm, ViewReservationsForm, ViewGuestsForm, ViewWorkOrderForm, EditWorkOrderForm, VacateRoomForm
 from hotel_system.models import Employee, Reservation, WorkOrder, RoomService
 from flask import Flask, render_template, send_from_directory, request, session, flash, url_for, redirect
 from hotel_system import app, db, bcrypt
@@ -155,7 +155,7 @@ def create_work_order():
     if form.validate_on_submit():
         standard_employees = Employee.query.filter_by(admin_flag=0).all()
         employee_id = random.choice(standard_employees).id
-        comment = comment = str(date.today()) + ' - ' + form.comments.data
+        comment = str(date.today()) + ' - ' + form.comments.data
         work_order = WorkOrder(type=form.type.data, room_num=form.room_num.data, employee_id=employee_id, comments=comment)
         db.session.add(work_order)
         db.session.commit()
@@ -310,6 +310,48 @@ def delete_work_order(work_order):
     db.session.commit()
     flash(f'Work order {work_order} has been deleted!', 'success')
     return redirect(url_for('view_work_orders'))
+
+@app.route('/vacate_room', methods=['GET', 'POST'])
+def vacate_room():
+    form = VacateRoomForm()
+    # Get all reservations
+    reservations = Reservation.query.filter(Reservation.check_in <= get_int_date(date.today())).all()
+
+    if form.validate_on_submit():
+        new_reservations = []
+        # filter reservations based on inputted parameters
+        for res in reservations:
+            if form.room_num.data is None or res.room_num == form.room_num.data:
+                if form.phone.data.strip().lower() == "" or str(res.phone).strip().lower() == form.phone.data.strip().lower():
+                    if form.email.data.strip().lower() == "" or str(res.email).strip().lower() == form.email.data.strip().lower():
+                        if form.room_type.data.strip().lower() == "" or str(res.room_type).strip().lower() == form.room_type.data.strip().lower():
+                            if form.check_in.data is None or res.check_in >= form.check_in.data:
+                                if form.check_out.data is None or res.check_out <= form.check_out.data:
+                                    new_reservations.append(res)
+
+        return render_template('vacate_room.html', title="Vacate Room", form=form, reservations=new_reservations)
+    return render_template('vacate_room.html', title="Vacate Room", form=form, reservations=reservations)
+
+@app.route('/vacate_room/<reservation>/<room_num>', methods=['GET', 'POST'])
+def vacate_room_helper(reservation, room_num):
+    # Vacating room (deleting reservation and clearing room service requests)
+    Reservation.query.filter(Reservation.id == reservation).delete()
+    RoomService.query.filter(RoomService.room_num == room_num).delete()
+
+    # Getting a random employee
+    standard_employees = Employee.query.filter_by(admin_flag=0).all()
+    employee_id = random.choice(standard_employees).id
+
+    # Creating comment
+    comment = str(date.today()) + ' - ' + 'Auto-generated room cleaning request'
+
+    # Auto generating a cleaning request for vacated room
+    cleaning_order = WorkOrder(type='Cleaning', room_num=room_num, employee_id=employee_id, comments=comment)
+    db.session.add(cleaning_order)
+    db.session.commit()
+    flash(f'Room {room_num} has been vacated and room cleaning request has been generated!', 'success')
+    return redirect(url_for('vacate_room'))
+
 
 @app.route('/<filename>')
 def load_image(filename):

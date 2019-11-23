@@ -1,0 +1,176 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<style>
+</style>
+<body>
+    <main role="main">
+        <div class="container"><br>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+               {% if messages %}
+                 <ul class="flashes">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">{{ message }}
+                            <button type="button" class="close" data-dismiss={{ category }} aria-label="Close">
+                                <span aria-hidden="true">x</span>
+                            </button>
+                        </div>
+                    {% endfor %}
+                </ul>
+              {% endif %}
+             {% endwith %}
+             <div class="jumbotron center">
+         		<form action="" method="POST">
+         			{{ form.hidden_tag() }}
+         			<fieldset class="form-group">
+                <legend class ="border-bottom mb-4"><h1>Vacate Rooms</h1></legend><br>
+                    <p>Use this page to query rooms from the hotel database.<br>
+                    Then, choose an associated room to vacate.
+                    <br>Note that vacating a room will automatically create a room cleaning order for this room.</p>
+                    <div class="row">
+                        <div class="col-xs-6 sm-6 col-md-6 col-lg-6">
+           				    <div class = "form-group">
+           					{{ form.room_num.label(class="form-control-label") }}
+
+           					{% if form.room_num.errors %}
+           						{{ form.room_num(class="form-control form-control-lg is-invalid") }}
+           						<div class="invalid-feedback">
+           							{% for error in form.room_num.errors %}
+           								<span>{{ error }}</span>
+           							{% endfor %}
+           						</div>
+           					{% else %}
+           						{{ form.room_num(class="form-control form-control-lg") }}
+           					{% endif %}
+                             </div>
+                        </div>
+                        <div class="col-xs-6 sm-6 col-md-6 col-lg-6">
+           				    <div class = "form-group">
+           					{{ form.room_type.label(class="form-control-label") }}
+
+           					{% if form.room_type.errors %}
+           						{{ form.room_type(class="form-control form-control-lg is-invalid") }}
+           						<div class="invalid-feedback">
+           							{% for error in form.room_type.errors %}
+           								<span>{{ error }}</span>
+           							{% endfor %}
+           						</div>
+           					{% else %}
+           						{{ form.room_type(class="form-control form-control-lg") }}
+           					{% endif %}
+                             </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6 sm-6 col-md-6 col-lg-6">
+           				    <div class = "form-group">
+           					{{ form.check_in.label(class="form-control-label") }}
+
+           					{% if form.check_in.errors %}
+           						{{ form.check_in(class="form-control form-control-lg is-invalid") }}
+           						<div class="invalid-feedback">
+           							{% for error in form.check_in.errors %}
+           								<span>{{ error }}</span>
+           							{% endfor %}
+           						</div>
+           					{% else %}
+           						{{ form.check_in(class="form-control form-control-lg") }}
+           					{% endif %}
+                             </div>
+                        </div>
+                        <div class="col-xs-6 sm-6 col-md-6 col-lg-6">
+           				    <div class = "form-group">
+           					{{ form.check_out.label(class="form-control-label") }}
+
+           					{% if form.check_out.errors %}
+           						{{ form.check_out(class="form-control form-control-lg is-invalid") }}
+           						<div class="invalid-feedback">
+           							{% for error in form.check_out.errors %}
+           								<span>{{ error }}</span>
+           							{% endfor %}
+           						</div>
+           					{% else %}
+           						{{ form.check_out(class="form-control form-control-lg") }}
+           					{% endif %}
+                             </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6 sm-6 col-md-6 col-lg-6">
+           				    <div class = "form-group">
+           					{{ form.phone.label(class="form-control-label") }}
+
+           					{% if form.phone.errors %}
+           						{{ form.phone(class="form-control form-control-lg is-invalid") }}
+           						<div class="invalid-feedback">
+           							{% for error in form.phone.errors %}
+           								<span>{{ error }}</span>
+           							{% endfor %}
+           						</div>
+           					{% else %}
+           						{{ form.phone(class="form-control form-control-lg") }}
+           					{% endif %}
+                             </div>
+                        </div>
+                        <div class="col-xs-6 sm-6 col-md-6 col-lg-6">
+           				    <div class = "form-group">
+           					{{ form.email.label(class="form-control-label") }}
+
+           					{% if form.email.errors %}
+           						{{ form.email(class="form-control form-control-lg is-invalid") }}
+           						<div class="invalid-feedback">
+           							{% for error in form.email.errors %}
+           								<span>{{ error }}</span>
+           							{% endfor %}
+           						</div>
+           					{% else %}
+           						{{ form.email(class="form-control form-control-lg") }}
+           					{% endif %}
+                             </div>
+                        </div>
+                    </div>
+         			</fieldset>
+         			 <div class="row">
+                        <div class="col-md-6 col-sm-6 col-xs-6 pad-adjust">
+                         <a href="{{ url_for('vacate_room') }}" class="btn btn-warning">Reset</a>
+                        </div>
+                        <div class="col-md-6 col-sm-6 col-xs-6 pad-adjust" id="payment_buttons">
+                          {{ form.submit(class="btn btn-danger btn-block") }}
+                        </div>
+                    </div>
+         		</form><br><br>
+                <h4 class="font-weight-light">Occupied Rooms List</h4>
+                <table class="table table-hover">
+                      <thead>
+                        <tr>
+                          <th scope="col">Room Number</th>
+                          <th scope="col">Room Type</th>
+                          <th scope="col">Date Checked In</th>
+                          <th scope="col">Date Checked Out</th>
+                          <th scope="col">Guest Phone Number</th>
+                          <th scope="col">Guest Email</th>
+                          <th scope="col"></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                      {% for res in reservations %}
+                        <tr>
+                          <td>{{ res.room_num }}</td>
+                          <td>{{ res.room_type }}</td>
+                          <td>{{ res.check_in }}</td>
+                          <td>{{ res.check_out }}</td>
+                          <td>{{ res.phone }}</td>
+                          <td>{{ res.email }}</td>
+                          <td><a href="{{ url_for('vacate_room_helper', reservation=res.id, room_num = res.room_num) }}" class="btn btn-sm btn-rounded btn-danger">Vacate</a></td>
+                        </tr>
+                      {% endfor %}
+                      </tbody>
+                </table>
+         	</div>
+        </div>
+    </main>
+</body>
+
+<script>
+</script>
+{% endblock %}

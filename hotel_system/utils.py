@@ -8,7 +8,7 @@ def get_int_date(date):
         return date
 
     # need to put in int format: 09170219
-    date = int(date.replace('-', ''))
+    date = int(str(date).replace('-', ''))
 
     return date
 
