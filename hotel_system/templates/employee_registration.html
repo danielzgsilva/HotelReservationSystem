@@ -93,11 +93,15 @@
 					{% endif %}
 				</div>
 			</fieldset>
-			<div class="form-group">
-				{{ form.submit(class="btn btn-outline-info") }}
-			</div>
+			<div class="row">
+                <div class="col-md-6 col-sm-6 col-xs-6 pad-adjust">
+                 <a href="{{ url_for('view_guests') }}" class="btn btn-warning">Reset</a>
+                </div>
+                <div class="col-md-6 col-sm-6 col-xs-6 pad-adjust" id="payment_buttons">
+                  {{ form.submit(class="btn btn-danger btn-block") }}
+                </div>
+            </div>
 		</form>
-
 	</div>
 	<div class="border-top pt-3">
 		<h4 class="text-muted">

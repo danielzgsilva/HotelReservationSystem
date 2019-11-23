@@ -104,3 +104,7 @@ class ViewWorkOrderForm(FlaskForm):
     room_num = IntegerField('Room Number', validators=[Optional()])
     type = StringField('Work Order Type', validators=[Optional()])
     submit = SubmitField('Filter Work Orders')
+
+class EditWorkOrderForm(FlaskForm):
+    comment = TextAreaField('Comment to add (120 Character Limit)', validators=[Length(max=120)])
+    submit = SubmitField('Add Comment')

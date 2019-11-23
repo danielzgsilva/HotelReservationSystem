@@ -1,9 +1,9 @@
-from hotel_system.forms import RegistrationForm, LoginForm, ReservationForm, WorkOrderForm, RoomServiceForm, PrintReceiptForm, ViewReservationsForm, ViewGuestsForm, ViewWorkOrderForm
+from hotel_system.forms import RegistrationForm, LoginForm, ReservationForm, WorkOrderForm, RoomServiceForm, PrintReceiptForm, ViewReservationsForm, ViewGuestsForm, ViewWorkOrderForm, EditWorkOrderForm
 from hotel_system.models import Employee, Reservation, WorkOrder, RoomService
 from flask import Flask, render_template, send_from_directory, request, session, flash, url_for, redirect
 from hotel_system import app, db, bcrypt
 from hotel_system.utils import get_int_date, get_availability, temp_reservation
-from datetime import datetime
+from datetime import datetime, date
 from flask_login import login_user, current_user, logout_user, login_required
 
 import random
@@ -155,7 +155,8 @@ def create_work_order():
     if form.validate_on_submit():
         standard_employees = Employee.query.filter_by(admin_flag=0).all()
         employee_id = random.choice(standard_employees).id
-        work_order = WorkOrder(type=form.type.data, room_num=form.room_num.data, employee_id=employee_id, comments=form.comments.data)
+        comment = comment = str(date.today()) + ' - ' + form.comments.data
+        work_order = WorkOrder(type=form.type.data, room_num=form.room_num.data, employee_id=employee_id, comments=comment)
         db.session.add(work_order)
         db.session.commit()
         flash(f'The work order has been assigned!', 'success')
@@ -171,8 +172,7 @@ def create_service_order():
         standard_employees = Employee.query.filter_by(admin_flag=0).all()
         employee_id = random.choice(standard_employees).id
 
-        #calculate price
-        #add to srvices string
+        # Create services list and calculate price
         services_list = []
         price = 0.00
         if form.toiletries.data:
@@ -290,6 +290,26 @@ def view_work_orders():
 
         return render_template('view_work_orders.html', title="Work Orders", form=form, work_orders=new_orders)
     return render_template('view_work_orders.html', title="Work Orders", form=form, work_orders=orders)
+
+@app.route('/edit_work_order/<work_order>', methods=['GET', 'POST'])
+def edit_work_order(work_order):
+    form = EditWorkOrderForm()
+    order = WorkOrder.query.filter(WorkOrder.order_number == work_order).first()
+    if form.validate_on_submit():
+        comment = '\n' + str(date.today()) + ' - ' + form.comment.data
+        order.comments = order.comments + comment
+        db.session.commit()
+        flash(f'You have added a comment to work order {work_order}!', 'success')
+        return redirect(url_for('view_work_orders'))
+
+    return render_template('edit_work_order.html', form = form, order = order)
+
+@app.route('/delete_work_order/<work_order>', methods=['GET', 'POST'])
+def delete_work_order(work_order):
+    WorkOrder.query.filter(WorkOrder.order_number == work_order).delete()
+    db.session.commit()
+    flash(f'Work order {work_order} has been deleted!', 'success')
+    return redirect(url_for('view_work_orders'))
 
 @app.route('/<filename>')
 def load_image(filename):
