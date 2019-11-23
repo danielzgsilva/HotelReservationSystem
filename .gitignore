@@ -1,2 +1,4 @@
 .idea
 hotel_system/__pycache__/
+*.pyc
+*.pyo
