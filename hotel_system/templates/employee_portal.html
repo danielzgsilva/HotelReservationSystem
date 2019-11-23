@@ -32,7 +32,7 @@
                 <p class="card-text">View all currently open work orders. Use this to also comment on or close a work order.</p>
               </div>
               <div class="card-footer">
-                <a href="#" class="btn btn-primary">Go!</a>
+                <a href="{{ url_for('view_work_orders') }}" class="btn btn-primary">Go!</a>
               </div>
             </div>
           </div>
@@ -102,10 +102,10 @@
             <div class="card h-100">
               <div class="card-body">
                 <h4 class="card-title">View Reservations</h4>
-                <p class="card-text">Query data for all reservations in a specific data range.</p>
+                <p class="card-text">Query data for all reservations.</p>
               </div>
               <div class="card-footer">
-                <a href="#" class="btn btn-primary">Go!</a>
+                <a href="{{ url_for('view_reservations') }}" class="btn btn-primary">Go!</a>
               </div>
             </div>
           </div>
@@ -117,7 +117,7 @@
                 <p class="card-text">Query a guest's data. Based on reservation number or specified guest fields.</p>
               </div>
               <div class="card-footer">
-                <a href="#" class="btn btn-primary">Go!</a>
+                <a href="{{ url_for('view_guests') }}" class="btn btn-primary">Go!</a>
               </div>
             </div>
           </div>

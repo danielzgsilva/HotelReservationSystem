@@ -1,0 +1,141 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<style>
+</style>
+<body>
+    <main role="main">
+        <div class="container"><br>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+               {% if messages %}
+                 <ul class="flashes">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">{{ message }}
+                            <button type="button" class="close" data-dismiss={{ category }} aria-label="Close">
+                                <span aria-hidden="true">x</span>
+                            </button>
+                        </div>
+                    {% endfor %}
+                </ul>
+              {% endif %}
+             {% endwith %}
+             <div class="jumbotron center">
+         		<form action="" method="POST">
+         			{{ form.hidden_tag() }}
+         			<fieldset class="form-group">
+                <legend class ="border-bottom mb-4"><h1>Work Orders</h1></legend><br>
+                    <p>Use this page to view and edit work orders.<br>
+                    In the fields below, provide any information you'd like to filter by.</p>
+                    <div class="row">
+                        <div class="col-xs-6 sm-6 col-md-6 col-lg-6">
+           				    <div class = "form-group">
+           					{{ form.first_name.label(class="form-control-label") }}
+
+           					{% if form.first_name.errors %}
+           						{{ form.first_name(class="form-control form-control-lg is-invalid") }}
+           						<div class="invalid-feedback">
+           							{% for error in form.first_name.errors %}
+           								<span>{{ error }}</span>
+           							{% endfor %}
+           						</div>
+           					{% else %}
+           						{{ form.first_name(class="form-control form-control-lg") }}
+           					{% endif %}
+                             </div>
+                        </div>
+                        <div class="col-xs-6 sm-6 col-md-6 col-lg-6">
+           				    <div class = "form-group">
+           					{{ form.last_name.label(class="form-control-label") }}
+
+           					{% if form.last_name.errors %}
+           						{{ form.last_name(class="form-control form-control-lg is-invalid") }}
+           						<div class="invalid-feedback">
+           							{% for error in form.last_name.errors %}
+           								<span>{{ error }}</span>
+           							{% endfor %}
+           						</div>
+           					{% else %}
+           						{{ form.last_name(class="form-control form-control-lg") }}
+           					{% endif %}
+                             </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6 sm-6 col-md-6 col-lg-6">
+           				    <div class = "form-group">
+           					{{ form.room_num.label(class="form-control-label") }}
+
+           					{% if form.room_num.errors %}
+           						{{ form.room_num(class="form-control form-control-lg is-invalid") }}
+           						<div class="invalid-feedback">
+           							{% for error in form.room_num.errors %}
+           								<span>{{ error }}</span>
+           							{% endfor %}
+           						</div>
+           					{% else %}
+           						{{ form.room_num(class="form-control form-control-lg") }}
+           					{% endif %}
+                             </div>
+                        </div>
+                        <div class="col-xs-6 sm-6 col-md-6 col-lg-6">
+           				    <div class = "form-group">
+           					{{ form.type.label(class="form-control-label") }}
+
+           					{% if form.type.errors %}
+           						{{ form.type(class="form-control form-control-lg is-invalid") }}
+           						<div class="invalid-feedback">
+           							{% for error in form.type.errors %}
+           								<span>{{ error }}</span>
+           							{% endfor %}
+           						</div>
+           					{% else %}
+           						{{ form.type(class="form-control form-control-lg") }}
+           					{% endif %}
+                             </div>
+                        </div>
+                    </div>
+         			</fieldset>
+         			 <div class="row " id="payment_buttons">
+                        <div class="col-md-6 col-sm-6 col-xs-6 pad-adjust">
+                         <a href="{{ url_for('view_work_orders') }}" class="btn btn-warning">Reset</a>
+                        </div>
+                        <div class="col-md-6 col-sm-6 col-xs-6 pad-adjust" id="payment_buttons">
+                          {{ form.submit(class="btn btn-danger btn-block") }}
+                        </div>
+                    </div>
+         		</form><br><br>
+                <h4 class="font-weight-light">Open Work Order List</h4>
+                <table class="table table-hover">
+                      <thead>
+                        <tr>
+                          <th scope="col">Order Number</th>
+                          <th scope="col">Order Type</th>
+                          <th scope="col">Room Number</th>
+                          <th scope="col">Assigned Employee ID</th>
+                          <th scope="col">Employee First Name</th>
+                          <th scope="col">Employee Last Name</th>
+                          <th scope="col">Comments</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                      {% for order in work_orders %}
+                        <tr>
+                          <th scope="row">{{ order[0].order_number }}</th>
+                          <td>{{ order[0].type }}</td>
+                          <td>{{ order[0].room_num }}</td>
+                          <td>{{ order[0].employee_id }}</td>
+                          <td>{{ order[1].first_name }}</td>
+                          <td>{{ order[1].last_name }}</td>
+                          <td>{{ order[0].comments }}</td>
+                        </tr>
+                      {% endfor %}
+                      </tbody>
+                </table>
+         	</div>
+        </div>
+    </main>
+</body>
+
+<script>
+</script>
+{% endblock %}

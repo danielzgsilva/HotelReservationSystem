@@ -60,9 +60,14 @@
                         </div>
                     </div>
          			</fieldset>
-         			<div class="form-group">
-         				{{ form.submit(class="btn btn-outline-info") }}
-         			</div>
+                    <div class="row " id="payment_buttons">
+                        <div class="col-md-6 col-sm-6 col-xs-6 pad-adjust">
+                         <a href="{{ url_for('employee_portal') }}" class="btn btn-warning">Cancel</a>
+                        </div>
+                        <div class="col-md-6 col-sm-6 col-xs-6 pad-adjust" id="payment_buttons">
+                          {{ form.submit(class="btn btn-danger btn-block") }}
+                        </div>
+                    </div>
          		</form>
          	</div>
         </div>

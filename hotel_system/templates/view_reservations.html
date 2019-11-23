@@ -23,7 +23,9 @@
          		<form action="" method="POST">
          			{{ form.hidden_tag() }}
          			<fieldset class="form-group">
-                <legend class ="border-bottom mb-4"><h1>Fill out the guest's information to filter reservations: </h1></legend><br>
+                <legend class ="border-bottom mb-4"><h1>View Reservations</h1></legend><br>
+                    <p>Use this page to query reservations from the hotel database.<br>
+                    In the fields below, provide any information you'd like to filter by.</p>
                     <div class="row">
                         <div class="col-xs-6 sm-6 col-md-6 col-lg-6">
            				    <div class = "form-group">
@@ -41,8 +43,6 @@
            					{% endif %}
                              </div>
                         </div>
-                    </div>
-										<div class="row">
                         <div class="col-xs-6 sm-6 col-md-6 col-lg-6">
            				    <div class = "form-group">
            					{{ form.last_name.label(class="form-control-label") }}
@@ -60,11 +60,121 @@
                              </div>
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="col-xs-6 sm-6 col-md-6 col-lg-6">
+           				    <div class = "form-group">
+           					{{ form.email.label(class="form-control-label") }}
+
+           					{% if form.email.errors %}
+           						{{ form.email(class="form-control form-control-lg is-invalid") }}
+           						<div class="invalid-feedback">
+           							{% for error in form.email.errors %}
+           								<span>{{ error }}</span>
+           							{% endfor %}
+           						</div>
+           					{% else %}
+           						{{ form.email(class="form-control form-control-lg") }}
+           					{% endif %}
+                             </div>
+                        </div>
+                        <div class="col-xs-6 sm-6 col-md-6 col-lg-6">
+           				    <div class = "form-group">
+           					{{ form.room_type.label(class="form-control-label") }}
+
+           					{% if form.room_type.errors %}
+           						{{ form.room_type(class="form-control form-control-lg is-invalid") }}
+           						<div class="invalid-feedback">
+           							{% for error in form.room_type.errors %}
+           								<span>{{ error }}</span>
+           							{% endfor %}
+           						</div>
+           					{% else %}
+           						{{ form.room_type(class="form-control form-control-lg") }}
+           					{% endif %}
+                             </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6 sm-6 col-md-6 col-lg-6">
+           				    <div class = "form-group">
+           					{{ form.check_in.label(class="form-control-label") }}
+
+           					{% if form.check_in.errors %}
+           						{{ form.check_in(class="form-control form-control-lg is-invalid") }}
+           						<div class="invalid-feedback">
+           							{% for error in form.check_in.errors %}
+           								<span>{{ error }}</span>
+           							{% endfor %}
+           						</div>
+           					{% else %}
+           						{{ form.check_in(class="form-control form-control-lg") }}
+           					{% endif %}
+                             </div>
+                        </div>
+                        <div class="col-xs-6 sm-6 col-md-6 col-lg-6">
+           				    <div class = "form-group">
+           					{{ form.check_out.label(class="form-control-label") }}
+
+           					{% if form.check_out.errors %}
+           						{{ form.check_out(class="form-control form-control-lg is-invalid") }}
+           						<div class="invalid-feedback">
+           							{% for error in form.check_out.errors %}
+           								<span>{{ error }}</span>
+           							{% endfor %}
+           						</div>
+           					{% else %}
+           						{{ form.check_out(class="form-control form-control-lg") }}
+           					{% endif %}
+                             </div>
+                        </div>
+                    </div>
          			</fieldset>
-         			<div class="form-group">
-         				{{ form.submit(class="btn btn-outline-info") }}
-         			</div>
-         		</form>
+         			 <div class="row " id="payment_buttons">
+                        <div class="col-md-6 col-sm-6 col-xs-6 pad-adjust">
+                         <a href="{{ url_for('view_reservations') }}" class="btn btn-warning">Reset</a>
+                        </div>
+                        <div class="col-md-6 col-sm-6 col-xs-6 pad-adjust" id="payment_buttons">
+                          {{ form.submit(class="btn btn-danger btn-block") }}
+                        </div>
+                    </div>
+         		</form><br><br>
+                <h4 class="font-weight-light">Reservation List</h4>
+                <table class="table table-hover">
+                      <thead>
+                        <tr>
+                          <th scope="col"></th>
+                          <th scope="col">First Name</th>
+                          <th scope="col">Last Name</th>
+                          <th scope="col">Email</th>
+                          <th scope="col">Check In</th>
+                          <th scope="col">Check Out</th>
+                          <th scope="col">TV</th>
+                          <th scope="col">Wifi</th>
+                          <th scope="col">Pool</th>
+                          <th scope="col">Parking</th>
+                          <th scope="col">Room Type</th>
+                          <th scope="col">Room Num</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                      {% for res in reservations %}
+                        <tr>
+                          <th scope="row">{{ loop.index }}</th>
+                          <td>{{ res.first_name }}</td>
+                          <td>{{ res.last_name }}</td>
+                          <td>{{ res.email }}</td>
+                          <td>{{ res.check_in }}</td>
+                          <td>{{ res.check_out }}</td>
+                          <td>{{ res.tv }}</td>
+                          <td>{{ res.wifi }}</td>
+                          <td>{{ res.pool }}</td>
+                          <td>dont have</td>
+                          <td>{{ res.room_type }}</td>
+                          <td>{{ res.room_num }}</td>
+                        </tr>
+                      {% endfor %}
+                      </tbody>
+                </table>
          	</div>
         </div>
     </main>

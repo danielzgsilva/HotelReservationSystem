@@ -1,4 +1,4 @@
-from hotel_system.forms import RegistrationForm, LoginForm, ReservationForm, WorkOrderForm, RoomServiceForm, PrintReceiptForm, ViewReservationsForm
+from hotel_system.forms import RegistrationForm, LoginForm, ReservationForm, WorkOrderForm, RoomServiceForm, PrintReceiptForm, ViewReservationsForm, ViewGuestsForm, ViewWorkOrderForm
 from hotel_system.models import Employee, Reservation, WorkOrder, RoomService
 from flask import Flask, render_template, send_from_directory, request, session, flash, url_for, redirect
 from hotel_system import app, db, bcrypt
@@ -230,24 +230,66 @@ def print_receipt():
 @login_required
 def view_reservations():
     form = ViewReservationsForm()
+    # Get all reservations
     reservations = Reservation.query.all()
-    print('This is the number of reservations before deletion: ')
-    print(len(reservations))
 
-    # removes unwanted results fron the list
-    for res in reservations:
-        if form.first_name.data is not "" and res.first_name.strip() is not form.first_name.data:
-            print(res.first_name.strip())
-            print(form.first_name.data)
-            print('the names above should not be the same!')
-            reservations.remove(res)
-            continue
-        if form.last_name.data is not "" and res.last_name is not form.last_name.data:
-            reservations.remove(res)
-            continue
-    print(len(reservations))
-    print(reservations)
-    return render_template('view_reservations.html', title="View Reservations", form=form)
+    if form.validate_on_submit():
+        new_reservations = []
+        # filter reservations based on inputted parameters
+        for res in reservations:
+            if form.first_name.data.strip().lower() == "" or str(res.first_name).strip().lower() == form.first_name.data.strip().lower():
+                if form.last_name.data.strip().lower() == "" or str(res.last_name).strip().lower() == form.last_name.data.strip().lower():
+                    if form.email.data.strip().lower() == "" or str(res.email).strip().lower() == form.email.data.strip().lower():
+                        if form.room_type.data.strip().lower() == "" or str(res.room_type).strip().lower() == form.room_type.data.strip().lower():
+                            if form.check_in.data is None or res.check_in >= form.check_in.data:
+                                if form.check_out.data is None or res.check_out <= form.check_out.data:
+                                    new_reservations.append(res)
+
+        return render_template('view_reservations.html', title="Reservations", form=form, reservations = new_reservations)
+    return render_template('view_reservations.html', title="Reservations", form=form, reservations = reservations)
+
+
+@app.route('/view_guests', methods=['GET', 'POST'])
+@login_required
+def view_guests():
+    form = ViewGuestsForm()
+    # Get all reservations
+    guests = Reservation.query.all()
+
+    if form.validate_on_submit():
+        new_guests = []
+        # filter reservations based on inputted parameters
+        for guest in guests:
+            if form.first_name.data.strip().lower() == "" or str(guest.first_name).strip().lower() == form.first_name.data.strip().lower():
+                if form.last_name.data.strip().lower() == "" or str(guest.last_name).strip().lower() == form.last_name.data.strip().lower():
+                    if form.email.data.strip().lower() == "" or str(guest.email).strip().lower() == form.email.data.strip().lower():
+                        if form.phone.data.strip().lower() == "" or str(guest.phone).strip().lower() == form.phone.data.strip().lower():
+                            if form.credit_card.data.strip().lower() == "" or str(guest.credit_card).strip().lower() == form.credit_card.data.strip().lower():
+                                if form.room_num.data is None or guest.room_num == form.room_num.data:
+                                    new_guests.append(guest)
+
+        return render_template('view_guests.html', title="Guests", form=form, guests=new_guests)
+    return render_template('view_guests.html', title="Guests", form=form, guests=guests)
+
+@app.route('/view_work_orders', methods=['GET', 'POST'])
+@login_required
+def view_work_orders():
+    form = ViewWorkOrderForm()
+    # Get all reservations
+    orders = db.session.query(WorkOrder, Employee).join(Employee, WorkOrder.employee_id == Employee.id).all()
+
+    if form.validate_on_submit():
+        new_orders = []
+        # filter reservations based on inputted parameters
+        for order in orders:
+            if form.first_name.data.strip().lower() == "" or str(order[1].first_name).strip().lower() == form.first_name.data.strip().lower():
+                if form.last_name.data.strip().lower() == "" or str(order[1].last_name).strip().lower() == form.last_name.data.strip().lower():
+                    if form.room_num.data is None or order[0].room_num == form.room_num.data:
+                        if form.type.data.strip().lower() == "" or str(order[0].type).strip().lower() == form.type.data.strip().lower():
+                            new_orders.append(order)
+
+        return render_template('view_work_orders.html', title="Work Orders", form=form, work_orders=new_orders)
+    return render_template('view_work_orders.html', title="Work Orders", form=form, work_orders=orders)
 
 @app.route('/<filename>')
 def load_image(filename):
