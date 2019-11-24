@@ -453,6 +453,9 @@ def assign_room_helper(id):
     flash(f'The system has assigned reservation {reservation.id} to room {reservation.room_num}', 'success')
     return render_template('edit_reservation.html', form=form, res=reservation, counts=room_counts, room_buckets=room_buckets)
 
+@app.route('/<filename>')
+def load_image(filename):
+    return send_from_directory('static/', filename)
 
 @app.errorhandler(404)
 def page_not_found(e):
