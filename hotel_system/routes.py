@@ -1,10 +1,11 @@
-from hotel_system.forms import RegistrationForm, LoginForm, ReservationForm, WorkOrderForm, RoomServiceForm, PrintReceiptForm, ViewReservationsForm, ViewGuestsForm, ViewWorkOrderForm, EditWorkOrderForm, VacateRoomForm
-from hotel_system.models import Employee, Reservation, WorkOrder, RoomService
+from hotel_system.forms import *
+from hotel_system.models import *
 from flask import Flask, render_template, send_from_directory, request, session, flash, url_for, redirect
 from hotel_system import app, db, bcrypt
-from hotel_system.utils import get_int_date, get_availability, temp_reservation
+from hotel_system.utils import *
 from datetime import datetime, date
 from flask_login import login_user, current_user, logout_user, login_required
+import bisect
 
 import random
 import os
@@ -13,7 +14,7 @@ import secrets
 @app.route("/")
 @app.route("/home")
 def index():
-    return render_template('index.html', title='Home', single_count = -1, double_count = -1, deluxe_count = -1)
+    return render_template('index.html', title='Home', room_counts = {'single': -1, 'double': -1, 'deluxe': -1})
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/home', methods=['GET', 'POST'])
@@ -25,19 +26,19 @@ def check_availability():
 
     date_in = get_int_date(check_in)
     date_out = get_int_date(check_out)
-    today = int(str(datetime.today().year) + str(datetime.today().month) + str(datetime.today().day))
+    today = get_int_date(str(date.today()))
 
     if date_out - date_in <= 0 or date_in < today:
-        message = 'The dates are not valid!  '+str(today)+'  '+ str(date_in)+ '  ' + str(date_out)
-        return render_template('failure.html', title='Home', message=message)
+        flash(f'These dates are not valid!', 'danger')
+        return render_template('index.html', title='Home', room_counts = {'single': -1, 'double': -1, 'deluxe': -1})
 
     # Querying hotel database
-    single_count, double_count, deluxe_count, avail_rooms = get_availability(num_guests, date_in, date_out)
+    room_counts, avail_rooms, room_buckets = get_availability(num_guests, date_in, date_out)
 
     session['available'] = avail_rooms
 
     return render_template('index.html', title='Home', num_guests = num_guests, check_in = check_in, check_out = check_out,
-                           single_count = single_count, double_count = double_count, deluxe_count = deluxe_count, scroll = 'bottom')
+                           room_counts = room_counts, scroll = 'bottom')
 
 @app.route('/booking', methods=['GET'])
 def make_reservation():
@@ -115,7 +116,7 @@ def employee_login():
             #next_page = request.args.get('next')
             #return redirect(next_page) if next_page else redirect(url_for('home'))
         else:
-            flash('Login Unsuccessful. Please check email and password', 'error')
+            flash('Login Unsuccessful. Please check email and password', 'danger')
     return render_template('employee_login.html', title = "Login", form = form)
 
 @app.route('/employee_registration', methods=['GET','POST'])
@@ -188,8 +189,7 @@ def create_service_order():
             price = price + 6.00
             services_list.append('other')
 
-        comma = ","
-        services_string = comma.join(services_list)
+        services_string = ",".join(services_list)
         service_order = RoomService(room_num=form.room_num.data, employee_id=employee_id, price=price, services=services_string, comments=form.comments.data)
         db.session.add(service_order)
         db.session.commit()
@@ -208,7 +208,6 @@ def print_receipt():
         if reservation_data is None:
             flash(f'Information not found! Please try again.', 'danger')
 
-        prices = {'single': 90, 'double': 150, 'deluxe': 250}
         cost_per_night = prices[reservation_data.room_type]
         reservation_data.date_created = str(reservation_data.date_created).split()[0]
         reservation_data.room_type = str(reservation_data.room_type).capitalize()
@@ -353,9 +352,107 @@ def vacate_room_helper(reservation, room_num):
     return redirect(url_for('vacate_room'))
 
 
-@app.route('/<filename>')
-def load_image(filename):
-    return send_from_directory('static/', filename)
+@app.route('/assign_room', methods = ['GET', 'POST'])
+def assign_room():
+    form = ViewReservationsForm()
+    # Get all reservations
+    reservations = Reservation.query.all()
+
+    if form.validate_on_submit():
+        new_reservations = []
+        # filter reservations based on inputted parameters
+        for res in reservations:
+            if form.first_name.data.strip().lower() == "" or str(
+                    res.first_name).strip().lower() == form.first_name.data.strip().lower():
+                if form.last_name.data.strip().lower() == "" or str(
+                        res.last_name).strip().lower() == form.last_name.data.strip().lower():
+                    if form.email.data.strip().lower() == "" or str(
+                            res.email).strip().lower() == form.email.data.strip().lower():
+                        if form.room_type.data.strip().lower() == "" or str(
+                                res.room_type).strip().lower() == form.room_type.data.strip().lower():
+                            if form.check_in.data is None or res.check_in >= form.check_in.data:
+                                if form.check_out.data is None or res.check_out <= form.check_out.data:
+                                    new_reservations.append(res)
+
+        return render_template('assign_room.html', title="Assign Room", form=form, reservations=new_reservations)
+    return render_template('assign_room.html', title="Assign Room", form=form, reservations=reservations)
+
+@app.route('/edit_reservation/<id>', methods = ['GET', 'POST'])
+def assign_room_helper(id):
+    form = EditReservationForm()
+    reservation = Reservation.query.filter(Reservation.id == id).first()
+    num_guests = room_capacities[reservation.room_type]
+    # Find open rooms
+    room_counts, open_rooms, room_buckets = get_availability(num_guests, reservation.check_in, reservation.check_out)
+    bisect.insort(room_buckets[reservation.room_type], reservation.room_num)
+    room_counts[reservation.room_type] += 1
+
+    if form.validate_on_submit():
+        today = get_int_date(str(date.today()))
+        # Validate dates
+        if form.check_in.data is not None and form.check_out.data is not None:
+            if form.check_in.data >= form.check_out.data:
+                flash(f'Check in date cannot be after the check out date.', 'danger')
+                return render_template('edit_reservation.html', form=form, res=reservation, counts=room_counts, room_buckets=room_buckets)
+            else:
+                reservation.check_in = form.check_in.data
+                reservation.check_out = form.check_out.data
+        elif form.check_in.data is not None:
+            # Validate check in date
+            if form.check_in.data < today:
+                flash(f'Check in date cannot be in the past.', 'danger')
+                return render_template('edit_reservation.html', form=form, res=reservation, counts=room_counts, room_buckets=room_buckets)
+            elif form.check_in.data >= reservation.check_out:
+                flash(f'New check in date cannot be after the current check out date. Please update the check out date as well.', 'danger')
+                return render_template('edit_reservation.html', form=form, res=reservation, counts=room_counts, room_buckets=room_buckets)
+            else:
+                reservation.check_in = form.check_in.data
+        elif form.check_out.data is not None:
+            # Validate check out date
+            if form.check_out.data < today:
+                flash(f'Check out date cannot be in the past.', 'danger')
+                return render_template('edit_reservation.html', form=form, res=reservation, counts=room_counts, room_buckets=room_buckets)
+            elif form.check_out.data <= reservation.check_in:
+                flash(f'New check out date cannot be before the current check in date. Please update the check in date as well.', 'danger')
+                return render_template('edit_reservation.html', form=form, res=reservation, counts=room_counts, room_buckets=room_buckets)
+            else:
+                reservation.check_out = form.check_out.data
+
+        if form.room_type.data.strip().lower() != "":
+            # Ensure the user picks an appropriate room number for the new room type
+            if form.room_num.data is None and form.room_type.data.strip().lower() != reservation.room_type:
+                flash(f'You must select an appropriate {reservation.room_type} room before changes can be saved.', 'danger')
+                return render_template('edit_reservation.html', form=form, res=reservation, counts=room_counts, room_buckets=room_buckets)
+            else:
+                reservation.room_type = form.room_type.data.strip().lower()
+
+        # Update room availability based on new selections
+        num_guests = room_capacities[reservation.room_type]
+        room_counts, open_rooms, room_buckets = get_availability(num_guests, reservation.check_in, reservation.check_out)
+        #bisect.insort(room_buckets[reservation.room_type], reservation.room_num)
+        room_counts[reservation.room_type] += 1
+
+        if form.room_num.data is not None:
+            # Ensure chosen room number is available and of correct type
+            if form.room_num.data not in room_buckets[reservation.room_type]:
+                flash(f'Room number {form.room_num.data} is not available or is not a {reservation.room_type} room. Changes were not saved', 'danger')
+                return render_template('edit_reservation.html', form=form, res=reservation, counts=room_counts, room_buckets=room_buckets)
+            else:
+                reservation.room_num = form.room_num.data
+        else:
+            # NEED BETTER WAY OF CHECKING FOR CONFLICTS HERE
+            # Check for conflicts with originally assigned room number
+            if reservation.room_num not in room_buckets[reservation.room_type] :
+                flash(f'Originally assigned room number {reservation.room_num} is not available during these dates. Changes were not saved', 'danger')
+                return render_template('edit_reservation.html', form=form, res=reservation, counts=room_counts, room_buckets=room_buckets)
+
+        db.session.commit()
+        flash('Changes have been made.', 'success')
+        return render_template('edit_reservation.html', form=form, res=reservation, counts=room_counts, room_buckets=room_buckets)
+
+    flash(f'The system has assigned reservation {reservation.id} to room {reservation.room_num}', 'success')
+    return render_template('edit_reservation.html', form=form, res=reservation, counts=room_counts, room_buckets=room_buckets)
+
 
 @app.errorhandler(404)
 def page_not_found(e):

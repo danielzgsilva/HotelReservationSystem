@@ -159,7 +159,7 @@
                       <tbody>
                       {% for res in reservations %}
                         <tr>
-                          <th scope="row">{{ loop.index }}</th>
+                          <th scope="row">{{ res.id }}</th>
                           <td>{{ res.first_name }}</td>
                           <td>{{ res.last_name }}</td>
                           <td>{{ res.email }}</td>

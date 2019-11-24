@@ -2,6 +2,8 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField, IntegerField, DateField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError, NumberRange, Optional
 from hotel_system.models import Employee
+from hotel_system.utils import get_int_date
+from datetime import date
 
 # Form for user Login
 class LoginForm(FlaskForm):
@@ -116,7 +118,7 @@ class VacateRoomForm(FlaskForm):
     check_out = IntegerField('Check Out', validators=[Optional()])
     phone = StringField('Guest Phone Number', validators=[Optional()])
     email = StringField('Guest Email', validators=[Email(), Optional()])
-    submit = SubmitField('Filter Reservations')
+    submit = SubmitField('Filter Rooms')
 
     def validate_room_num(self, room_num):
         valid = 1 <= room_num.data <= 30
@@ -126,3 +128,19 @@ class VacateRoomForm(FlaskForm):
     def validate_room_type(self, room_type):
         if room_type.data.strip().lower() not in ['single', 'double', 'deluxe', '']:
             raise ValidationError('Room type is not valid. Please input a valid room type.')
+
+class EditReservationForm(FlaskForm):
+    room_num = IntegerField('Room Number', validators=[Optional()])
+    room_type = StringField('Room Type')
+    check_in = IntegerField('Check In', validators=[Optional()])
+    check_out = IntegerField('Check Out', validators=[Optional()])
+    submit = SubmitField('Edit Reservation')
+
+    def validate_room_type(self, room_type):
+        if room_type.data.strip().lower() not in ['single', 'double', 'deluxe', '']:
+            raise ValidationError('Room type is not valid. Please input a valid room type.')
+
+    def validate_room_num(self, room_num):
+        valid = 1 <= room_num.data <= 30
+        if not valid:
+            raise ValidationError('Room number is not valid. Please input a valid room number.')

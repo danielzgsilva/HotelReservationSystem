@@ -1,0 +1,189 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<style>
+</style>
+<body>
+    <main role="main">
+        <div class="container"><br>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+               {% if messages %}
+                 <ul class="flashes">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">{{ message }}
+                            <button type="button" class="close" data-dismiss={{ category }} aria-label="Close">
+                                <span aria-hidden="true">x</span>
+                            </button>
+                        </div>
+                    {% endfor %}
+                </ul>
+              {% endif %}
+             {% endwith %}
+             <div class="jumbotron center">
+         		<form action="" method="POST">
+         			{{ form.hidden_tag() }}
+         			<fieldset class="form-group">
+                <legend class ="border-bottom mb-4"><h1>Edit Reservation</h1></legend>
+                    <h4 class="font-weight-light">Reservation Information</h4>
+                    <table class="table table-hover">
+                      <thead>
+                        <tr>
+                          <th scope="col"></th>
+                          <th scope="col">First Name</th>
+                          <th scope="col">Last Name</th>
+                          <th scope="col">Email</th>
+                          <th scope="col">Check In</th>
+                          <th scope="col">Check Out</th>
+                          <th scope="col">Room Type</th>
+                          <th scope="col">Room Number</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <th scope="row">{{ res.id }}</th>
+                          <td>{{ res.first_name }}</td>
+                          <td>{{ res.last_name }}</td>
+                          <td>{{ res.email }}</td>
+                          <td>{{ res.check_in }}</td>
+                          <td>{{ res.check_out }}</td>
+                          <td>{{ res.room_type }}</td>
+                          <td>{{ res.room_num }}</td>
+                        </tr>
+                      </tbody>
+                </table>
+                    <p>Use the fields below to manually override this decision, or any previously given information. <br>
+                    You will find a list of rooms open during this period to aid you in this.</p>
+                    <div class="row">
+                        <div class="col-xs-6 sm-6 col-md-6 col-lg-6">
+           				    <div class = "form-group">
+           					{{ form.room_num.label(class="form-control-label") }}
+
+           					{% if form.room_num.errors %}
+           						{{ form.room_num(class="form-control form-control-lg is-invalid") }}
+           						<div class="invalid-feedback">
+           							{% for error in form.room_num.errors %}
+           								<span>{{ error }}</span>
+           							{% endfor %}
+           						</div>
+           					{% else %}
+           						{{ form.room_num(class="form-control form-control-lg") }}
+           					{% endif %}
+                             </div>
+                        </div>
+                        <div class="col-xs-6 sm-6 col-md-6 col-lg-6">
+           				    <div class = "form-group">
+           					{{ form.room_type.label(class="form-control-label") }}
+
+           					{% if form.room_type.errors %}
+           						{{ form.room_type(class="form-control form-control-lg is-invalid") }}
+           						<div class="invalid-feedback">
+           							{% for error in form.room_type.errors %}
+           								<span>{{ error }}</span>
+           							{% endfor %}
+           						</div>
+           					{% else %}
+           						{{ form.room_type(class="form-control form-control-lg") }}
+           					{% endif %}
+                             </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6 sm-6 col-md-6 col-lg-6">
+           				    <div class = "form-group">
+           					{{ form.check_in.label(class="form-control-label") }}
+
+           					{% if form.check_in.errors %}
+           						{{ form.check_in(class="form-control form-control-lg is-invalid") }}
+           						<div class="invalid-feedback">
+           							{% for error in form.check_in.errors %}
+           								<span>{{ error }}</span>
+           							{% endfor %}
+           						</div>
+           					{% else %}
+           						{{ form.check_in(class="form-control form-control-lg") }}
+           					{% endif %}
+                             </div>
+                        </div>
+                        <div class="col-xs-6 sm-6 col-md-6 col-lg-6">
+           				    <div class = "form-group">
+           					{{ form.check_out.label(class="form-control-label") }}
+
+           					{% if form.check_out.errors %}
+           						{{ form.check_out(class="form-control form-control-lg is-invalid") }}
+           						<div class="invalid-feedback">
+           							{% for error in form.check_out.errors %}
+           								<span>{{ error }}</span>
+           							{% endfor %}
+           						</div>
+           					{% else %}
+           						{{ form.check_out(class="form-control form-control-lg") }}
+           					{% endif %}
+                             </div>
+                        </div>
+                    </div>
+         			</fieldset>
+         			 <div class="row">
+                        <div class="col-md-6 col-sm-6 col-xs-6 pad-adjust">
+                         <a href="{{ url_for('assign_room') }}" class="btn btn-warning">Done</a>
+                        </div>
+                        <div class="col-md-6 col-sm-6 col-xs-6 pad-adjust" id="payment_buttons">
+                          {{ form.submit(class="btn btn-danger btn-block") }}
+                        </div>
+                    </div>
+         		</form><br>
+             <h4 class="font-weight-light">Room Availability</h4>
+             <ul class="list-group">
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                  <span class="btn-group">
+                  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                      Singles <span class="caret"></span>
+
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li>Available singles:</li>
+                            {% for room in room_buckets['single'] %}
+                                <li>{{ room }}</li>
+                            {% endfor %}
+                        </ul>
+                    </span>
+                <span class="badge badge-primary badge-pill">{{ counts['single'] }} Available</span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span class="btn-group">
+                  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                      Doubles <span class="caret"></span>
+
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                        <li>Available doubles:</li>
+                            {% for room in room_buckets['double'] %}
+                                <li>{{ room }}</li>
+                            {% endfor %}
+                        </ul>
+                    </span>
+                <span class="badge badge-primary badge-pill">{{ counts['double'] }} Available</span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span class="btn-group">
+                  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                      Deluxes <span class="caret"></span>
+
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                        <li>Available deluxes:</li>
+                            {% for room in room_buckets['deluxe'] %}
+                                <li>{{ room }}</li>
+                            {% endfor %}
+                        </ul>
+                    </span>
+                <span class="badge badge-primary badge-pill">{{ counts['deluxe'] }} Available</span>
+              </li>
+            </ul>
+         	</div>
+        </div>
+    </main>
+</body>
+
+<script>
+</script>
+{% endblock %}

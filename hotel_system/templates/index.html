@@ -91,8 +91,8 @@
                       </ul>
                   </div>
                     <div class="card-footer">
-                    {% if single_count > 0 %}
-                        <strong>{{ single_count }} available</strong><br>
+                    {% if room_counts['single'] > 0 %}
+                        <strong>{{ room_counts['single'] }} available</strong><br>
                         <a href="{{ url_for('make_reservation', num_guests=num_guests, check_in=check_in, check_out=check_out, room='single') }}" class="btn btn-primary">Book Now</a>
                     {% endif %}
                     </div>
@@ -110,8 +110,8 @@
                       </ul>
                   </div>
                     <div class="card-footer">
-                    {% if double_count > 0 %}
-                        <strong>{{ double_count }} available</strong><br>
+                    {% if room_counts['double'] > 0 %}
+                        <strong>{{ room_counts['double'] }} available</strong><br>
                         <a href="{{ url_for('make_reservation', num_guests=num_guests, check_in=check_in, check_out=check_out, room='double') }}" class="btn btn-primary">Book Now</a>
                     {% endif %}
                     </div>
@@ -129,8 +129,8 @@
                       </ul>
                   </div>
                     <div class="card-footer">
-                    {% if deluxe_count > 0 %}
-                        <strong>{{ deluxe_count }} available</strong><br>
+                    {% if room_counts['deluxe'] > 0 %}
+                        <strong>{{ room_counts['deluxe'] }} available</strong><br>
                         <a href="{{ url_for('make_reservation', num_guests=num_guests, check_in=check_in, check_out=check_out, room='deluxe') }}" class="btn btn-primary">Book Now</a>
                     {% endif %}
                     </div>
