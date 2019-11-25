@@ -73,55 +73,57 @@
             </div>
           </div>
         </div>
-        <div class="row text-center">
-          <div class="col-lg-3 col-md-6 mb-4">
-            <div class="card h-100">
-              <div class="card-body">
-                <h4 class="card-title">Assign Rooms</h4>
-                <p class="card-text">Assign rooms to guests who have checked into their reservation.</p>
-              </div>
-              <div class="card-footer">
-                <a href="{{ url_for('assign_room') }}" class="btn btn-primary">Go!</a>
+        {% if admin_flag == True %}
+          <div class="row text-center">
+            <div class="col-lg-3 col-md-6 mb-4">
+              <div class="card h-100">
+                <div class="card-body">
+                  <h4 class="card-title">Assign Rooms</h4>
+                  <p class="card-text">Assign rooms to guests who have checked into their reservation.</p>
+                </div>
+                <div class="card-footer">
+                  <a href="{{ url_for('assign_room') }}" class="btn btn-primary">Go!</a>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div class="col-lg-3 col-md-6 mb-4">
-            <div class="card h-100">
-              <div class="card-body">
-                <h4 class="card-title">Vacate Room</h4>
-                <p class="card-text">Vacate a room in the system after a guest checks out. This will auto-generate a room cleaning order.</p>
-              </div>
-              <div class="card-footer">
-                <a href="{{ url_for('vacate_room') }}" class="btn btn-primary">Go!</a>
+            <div class="col-lg-3 col-md-6 mb-4">
+              <div class="card h-100">
+                <div class="card-body">
+                  <h4 class="card-title">Vacate Room</h4>
+                  <p class="card-text">Vacate a room in the system after a guest checks out. This will auto-generate a room cleaning order.</p>
+                </div>
+                <div class="card-footer">
+                  <a href="{{ url_for('vacate_room') }}" class="btn btn-primary">Go!</a>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div class="col-lg-3 col-md-6 mb-4">
-            <div class="card h-100">
-              <div class="card-body">
-                <h4 class="card-title">View Reservations</h4>
-                <p class="card-text">Query data for all reservations. Filter on specified guest or reservation information</p>
-              </div>
-              <div class="card-footer">
-                <a href="{{ url_for('view_reservations') }}" class="btn btn-primary">Go!</a>
+            <div class="col-lg-3 col-md-6 mb-4">
+              <div class="card h-100">
+                <div class="card-body">
+                  <h4 class="card-title">View Reservations</h4>
+                  <p class="card-text">Query data for all reservations. Filter on specified guest or reservation information</p>
+                </div>
+                <div class="card-footer">
+                  <a href="{{ url_for('view_reservations') }}" class="btn btn-primary">Go!</a>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div class="col-lg-3 col-md-6 mb-4">
-            <div class="card h-100">
-              <div class="card-body">
-                <h4 class="card-title">View Guest Data</h4>
-                <p class="card-text">Query a guest's data. Based on reservation number or specified guest fields.</p>
-              </div>
-              <div class="card-footer">
-                <a href="{{ url_for('view_guests') }}" class="btn btn-primary">Go!</a>
+            <div class="col-lg-3 col-md-6 mb-4">
+              <div class="card h-100">
+                <div class="card-body">
+                  <h4 class="card-title">View Guest Data</h4>
+                  <p class="card-text">Query a guest's data. Based on reservation number or specified guest fields.</p>
+                </div>
+                <div class="card-footer">
+                  <a href="{{ url_for('view_guests') }}" class="btn btn-primary">Go!</a>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        {% endif %}
     </div>
     <script>
 

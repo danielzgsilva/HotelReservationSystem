@@ -96,7 +96,8 @@ def store_reservation():
 @app.route('/employee_portal', methods=['GET'])
 @login_required
 def employee_portal():
-    return render_template('employee_portal.html', title='Employee Portal')
+    print(current_user.admin_flag)
+    return render_template('employee_portal.html', title='Employee Portal', admin_flag=current_user.admin_flag)
 
 # employee login route
 @app.route('/employee_login', methods=['GET','POST'])
@@ -228,6 +229,9 @@ def print_receipt():
 @app.route('/view_reservations', methods=['GET', 'POST'])
 @login_required
 def view_reservations():
+    if not check_for_admin(current_user.admin_flag):
+        flash(f'You must be an admin to access this page!','danger')
+        return redirect(url_for('employee_portal'))
     form = ViewReservationsForm()
     # Get all reservations
     reservations = Reservation.query.all()
@@ -251,6 +255,9 @@ def view_reservations():
 @app.route('/view_guests', methods=['GET', 'POST'])
 @login_required
 def view_guests():
+    if not check_for_admin(current_user.admin_flag):
+        flash(f'You must be an admin to access this page!','danger')
+        return redirect(url_for('employee_portal'))
     form = ViewGuestsForm()
     # Get all reservations
     guests = Reservation.query.all()
@@ -312,6 +319,9 @@ def delete_work_order(work_order):
 
 @app.route('/vacate_room', methods=['GET', 'POST'])
 def vacate_room():
+    if not check_for_admin(current_user.admin_flag):
+        flash(f'You must be an admin to access this page!','danger')
+        return redirect(url_for('employee_portal'))
     form = VacateRoomForm()
     # Get all reservations
     reservations = Reservation.query.filter(Reservation.check_in <= get_int_date(date.today())).all()
@@ -354,6 +364,10 @@ def vacate_room_helper(reservation, room_num):
 
 @app.route('/assign_room', methods = ['GET', 'POST'])
 def assign_room():
+    if not check_for_admin(current_user.admin_flag):
+        flash(f'You must be an admin to access this page!','danger')
+        return redirect(url_for('employee_portal'))
+
     form = ViewReservationsForm()
     # Get all reservations
     reservations = Reservation.query.all()
@@ -464,3 +478,10 @@ def page_not_found(e):
 @app.errorhandler(500)
 def internal_server_error(e):
     return render_template('index.html'), 500
+
+# used to check admin status
+def check_for_admin(admin_flag):
+    if admin_flag == False:
+        return False
+    else:
+        return True
