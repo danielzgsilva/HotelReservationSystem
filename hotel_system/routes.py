@@ -112,10 +112,6 @@ def employee_login():
             login_user(employee)
             flash('You have been logged in!', 'success')
             return redirect(url_for('employee_portal'))
-            # get's the page that user tried to enter that
-            # redirected then to log in
-            #next_page = request.args.get('next')
-            #return redirect(next_page) if next_page else redirect(url_for('home'))
         else:
             flash('Login Unsuccessful. Please check email and password', 'danger')
     return render_template('employee_login.html', title = "Login", form = form)
