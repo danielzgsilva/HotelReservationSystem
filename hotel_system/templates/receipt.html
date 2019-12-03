@@ -50,7 +50,7 @@
                           <th scope="row">Parking</th>
                           <td>$20 flat rate</td>
                           {% set parking_price = 10 * 1 %}
-                          <td>${{ parking_price }} (we dont have this)</td>
+                          <td>${{ parking_price }}</td>
                         </tr>
                         <tr>
                           <th scope="row">Cable TV</th>
@@ -107,7 +107,7 @@
                             <a href="{{ url_for('employee_portal') }}" class="btn btn-warning">Back to Employee Portal</a>
                         </div>
                         <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 pad-adjust">
-                            <a href="{{ url_for('employee_portal') }}" class="btn btn-danger">Vacate this room</a>
+                            <a href="{{ url_for('vacate_room_helper', reservation=reservation.id, room_num = reservation.room_num) }}"  class="btn btn-danger">Vacate this room</a>
                         </div>
                     </div>
                 </div>
